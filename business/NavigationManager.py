@@ -13,6 +13,20 @@ class AllHotels(Menu):
     def _navigate(self, choice: int):
         match choice:
             case 1:
+                from SearchManager import SearchManager
+
+                # Annahme: Der Dateipfad zur Datenbankdatei wird als Argument übergeben
+                database_file = "../data/database.db"
+
+                # Erstelle eine Instanz von SearchManager und übergebe den Dateipfad zur Datenbankdatei
+                search_manager = SearchManager(database_file)
+
+                # Rufe die Methode get_all_hotels auf der Instanz auf
+                all_hotels = search_manager.get_all_hotels()
+
+                # Drucke die erhaltenen Hotels aus
+                for hotel in all_hotels:
+                    print(hotel)
                 return None
             case 2:
                 return None

@@ -1,18 +1,20 @@
 from pathlib import Path
+
+import sm
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import joinedload, session
 from sqlalchemy.orm import sessionmaker, scoped_session
 from data_access.data_base import init_db
 from data_models.models import *
 
-class SerachManager(object):
+
+class SearchManager(object):
     def __init__(self, database_file):
         database_path = Path(database_file)
         if not database_path.is_file():
             init_db(database_file, generate_example_data=True)
         self.__engine = engine = create_engine(f'sqlite:///{database_file}', echo=False)
-        self.__session = session = scoped_session(sessionmaker(bind= self.__engine))
-
+        self.__session = session = scoped_session(sessionmaker(bind=self.__engine))
 
     def get_hotels(self, name: str = None, stars: int = None, address: str = None):
         query = select(Hotel)
@@ -26,10 +28,14 @@ class SerachManager(object):
 
         hotels = self.__session.execute(query).scalars().all()
         return hotels
+    def get_all_hotels(self):
+        query = select(Hotel.name, Hotel)
+        allhotels = self.__session.execute(query).scalars().all()
+        return allhotels
 
 
 if __name__ == "__main__":
-    sm = SerachManager('../data/database.db')
+    sm = SearchManager('../data/database.db')
 
     name = input("Geben Sie den Namen des Hotels ein (oder lassen Sie das Feld leer): ")
     stars_input = input("Geben Sie die Sterneanzahl des Hotels ein (oder lassen Sie das Feld leer): ")
@@ -47,3 +53,7 @@ if __name__ == "__main__":
             print(hotel)  # Angenommen, `hotel` ist eine Instanz, die sinnvoll als String dargestellt werden kann
     else:
         print("Keine Hotels gefunden, die den Kriterien entsprechen.")
+
+
+
+
