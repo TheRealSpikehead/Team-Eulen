@@ -1,52 +1,49 @@
-# include all search functions here
-# accept search criteria, search by various criteria
-import os
-import sys
 from pathlib import Path
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import joinedload, session
+from sqlalchemy.orm import sessionmaker, scoped_session
+from data_access.data_base import init_db
+from data_models.models import *
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
-
-from sqlalchemy import create_engine
-
-from sqlalchemy import create_engine, func
-from sqlalchemy.schema import CreateTable
-from data_access.data_base import *
-from data_access.data_generator import *
-from gui.hotel_search import *
-
-
-DB_PATH = './data/hotel_reservation.db'
-
+class SerachManager(object):
+    def __init__(self, database_file):
+        database_path = Path(database_file)
+        if not database_path.is_file():
+            init_db(database_file, generate_example_data=True)
+        self.__engine = engine = create_engine(f'sqlite:///{database_file}', echo=False)
+        self.__session = session = scoped_session(sessionmaker(bind= self.__engine))
 
 
-def main():
-    init_db(DB_PATH, True, True, True)
-    engine = create_engine(f"sqlite:///{DB_PATH}")
+    def get_hotels(self, name: str = None, stars: int = None, address: str = None):
+        query = select(Hotel)
 
-    with Session(engine) as session:
-        search_manager = SearchManager(session)
-        app = QApplication(sys.argv)
-        main_window = HotelTableView(session)
-        main_window.show()
-        sys.exit(app.exec_())
+        if name:
+            query = query.where(Hotel.name.like(f"%{name}%"))
+        if stars is not None:
+            query = query.where(Hotel.stars == stars)
+        if address:
+            query = query.join(Hotel.address).where(Address.city.like(f"%{address}%"))
 
-if __name__ == '__main__':
-    main()
-
-class SearchManager:
-    def __init__(self, session):
-        self.session = session
-
-    def accept_search_criteria(self):
-        criteria = []
-        return criteria
+        hotels = self.__session.execute(query).scalars().all()
+        return hotels
 
 
-    def show_available_hotels(self, criteria):
-        print("All Hotels:")
-        query = select(Hotel.name)
-        print(query)
-        result = self.session.execute(query)
-        for hotel in result:
-            print(hotel)
+if __name__ == "__main__":
+    sm = SerachManager('../data/database.db')
+
+    name = input("Geben Sie den Namen des Hotels ein (oder lassen Sie das Feld leer): ")
+    stars_input = input("Geben Sie die Sterneanzahl des Hotels ein (oder lassen Sie das Feld leer): ")
+    address = input("Geben Sie die Stadtadresse des Hotels ein (oder lassen Sie das Feld leer): ")
+
+    # Konvertierung der Sterne-Eingabe in einen Integer, falls nicht leer
+    stars = int(stars_input) if stars_input.isdigit() else None
+
+    # Suche durchführen
+    hotels = sm.get_hotels(name=name if name else None, stars=stars, address=address if address else None)
+
+    if hotels:
+        print(f"Anzahl gefundener Hotels: {len(hotels)}")
+        for hotel in hotels:
+            print(hotel)  # Angenommen, `hotel` ist eine Instanz, die sinnvoll als String dargestellt werden kann
+    else:
+        print("Keine Hotels gefunden, die den Kriterien entsprechen.")
