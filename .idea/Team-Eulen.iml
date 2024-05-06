@@ -5,7 +5,11 @@
       <sourceFolder url="file://$MODULE_DIR$/console" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
+<<<<<<< HEAD
     <orderEntry type="jdk" jdkName="Python 3.12 (Team-Eulen)" jdkType="Python SDK" />
+=======
+    <orderEntry type="jdk" jdkName="Python 3.12 (Team-Eulen) (2)" jdkType="Python SDK" />
+>>>>>>> origin/main
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

@@ -9,7 +9,7 @@ class SerachManager(object):
     def __init__(self, database_file):
         database_path = Path(database_file)
         if not database_path.is_file():
-            init_db(database_file, generate_examples=False)
+            init_db(database_file, generate_example_data=True)
         self.__engine = engine = create_engine(f'sqlite:///{database_file}', echo=False)
         self.__session = session = scoped_session(sessionmaker(bind= self.__engine))
 
@@ -29,7 +29,7 @@ class SerachManager(object):
 
 
 if __name__ == "__main__":
-    sm = SerachManager('../data/hotel_reservation.db')
+    sm = SerachManager('../data/database.db')
 
     name = input("Geben Sie den Namen des Hotels ein (oder lassen Sie das Feld leer): ")
     stars_input = input("Geben Sie die Sterneanzahl des Hotels ein (oder lassen Sie das Feld leer): ")
