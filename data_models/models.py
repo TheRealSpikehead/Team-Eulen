@@ -120,6 +120,7 @@ class Room(Base):
     '''
     Raum Entitätstyp.
     '''
+
     __tablename__ = "room"
 
     hotel_id: Mapped[int] = mapped_column("hotel_id", ForeignKey("hotel.id"), primary_key=True)
@@ -139,6 +140,7 @@ class Booking(Base):
     '''
     Buchungs Entitätstyp.
     '''
+
     __tablename__ = "booking"
 
     id: Mapped[int] = mapped_column("id", primary_key=True)
