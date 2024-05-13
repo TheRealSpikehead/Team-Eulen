@@ -34,6 +34,16 @@ class SearchManager(object):
         hotels = self.__session.execute(query).scalars().all()
         return hotels
 
+    def get_hotels2(self, name: str, stars: int = None, max_guests: int = None):
+        query = select(Hotel)
+
+        if name:
+            query = query.where(Hotel.name.like(f"%{name}%"))
+        if stars is not None:
+            query = query.where(Hotel.stars == stars)
+        if max_guests is not None:
+            query = query.join(Hotel.rooms).where(Room.max_guests)
+
     def get_all_hotels(self):
         query = select(Hotel.name, Hotel)
         allhotels = self.__session.execute(query).scalars().all()
@@ -66,10 +76,27 @@ class SearchManager(object):
         details = self.__session.execute(query)
         return details
 
+    # Als Gastnutzer möchte ich Details zu verschiedenen Zimmertypen (EZ,
+    # DZ, Familienzimmer), die in einem Hotel verfügbar sind, sehen, einschließlich
+    # der maximalen Anzahl von Gästen für dieses Zimmer, Beschreibung, Preis
+    # und Ausstattung, um eine fundierte Entscheidung zu treffen
+
+    def get_room_details(self):
+        j = join(Hotel, Room, Hotel.id == Room.hotel_id)
+        query = select(Hotel.name, Room.type, Room.max_guests, Room.amenities, Room.description).select_from(j)
+        room_details = self.__session.execute(query)
+        return room_details
+
 
 if __name__ == "__main__":
 
     sm = SearchManager('../data/database.db')
+
+
+    room_details = sm.get_room_details()
+    for detail in room_details:
+        print(f"Hotelname: {detail[0]}, Room_type: {detail[1]}, guests: {detail[2]}, "
+              f"Amanities: {detail[3]}, Description: {detail[4]}")
 
     # name = input("Geben Sie den Namen des Hotels ein (oder lassen Sie das Feld leer): ")
     # stars_input = input("Geben Sie die Sterneanzahl des Hotels ein (oder lassen Sie das Feld leer): ")
@@ -99,12 +126,14 @@ if __name__ == "__main__":
     # details = sm.get_hotel_informations()  ## 1.1.5
     # for detail in details:
     #     print(f"Name: {detail[0]}, Stars: {detail[1]}, Street: {detail[2]}, Zip: {detail[3]}, City: {detail[4]}")
+    ###################################################################################################3
+    # start_date = date(2024, 1, 1)
+    # end_date = date(2024, 12, 31)
+    # city = "Olten"
+    # max_guests = 2
+    #
+    # available_hotels = sm.get_available_hotels(city, start_date, end_date, max_guests)
+    # for hotel in available_hotels:
+    #     print(f"Hotel: {hotel[0]}, Stars: {hotel[1]}, Room: {hotel[2]}, Capacity: {hotel[3]}")
 
-    start_date = date(2024, 1, 1)
-    end_date = date(2024, 12, 31)
-    city = "Olten"
-    max_guests = 2
 
-    available_hotels = sm.get_available_hotels(city, start_date, end_date, max_guests)
-    for hotel in available_hotels:
-        print(f"Hotel: {hotel[0]}, Stars: {hotel[1]}, Room: {hotel[2]}, Capacity: {hotel[3]}")
