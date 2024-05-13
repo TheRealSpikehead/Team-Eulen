@@ -34,23 +34,12 @@ class SearchManager(object):
         hotels = self.__session.execute(query).scalars().all()
         return hotels
 
-    def get_hotels2(self, name: str, stars: int = None, max_guests: int = None):
-        query = select(Hotel)
-
-        if name:
-            query = query.where(Hotel.name.like(f"%{name}%"))
-        if stars is not None:
-            query = query.where(Hotel.stars == stars)
-        if max_guests is not None:
-            query = query.join(Hotel.rooms).where(Room.max_guests)
 
     def get_all_hotels(self):
         query = select(Hotel.name, Hotel)
         allhotels = self.__session.execute(query).scalars().all()
         return allhotels
 
-    def get_all_rooms_by_date(self, date: str):
-        pass
 
     def get_all_rooms(self):
         query = select(Room)
@@ -70,16 +59,12 @@ class SearchManager(object):
         available_rooms = self.__session.execute(query).fetchall()
         return available_rooms
 
-    def get_hotel_informations(self):  # 1.1.5
+    def get_hotel_information(self):  # 1.1.5
         j = join(Hotel, Address, Hotel.address_id == Address.id)
         query = select(Hotel.name, Hotel.stars, Address.street, Address.zip, Address.city).select_from(j)
         details = self.__session.execute(query)
         return details
 
-    # Als Gastnutzer möchte ich Details zu verschiedenen Zimmertypen (EZ,
-    # DZ, Familienzimmer), die in einem Hotel verfügbar sind, sehen, einschließlich
-    # der maximalen Anzahl von Gästen für dieses Zimmer, Beschreibung, Preis
-    # und Ausstattung, um eine fundierte Entscheidung zu treffen
 
     def get_room_details(self):
         j = join(Hotel, Room, Hotel.id == Room.hotel_id)
@@ -123,7 +108,7 @@ if __name__ == "__main__":
     # for room in allrooms:
     #     print(room)
 
-    # details = sm.get_hotel_informations()  ## 1.1.5
+    # details = sm.get_hotel_information()  ## 1.1.5
     # for detail in details:
     #     print(f"Name: {detail[0]}, Stars: {detail[1]}, Street: {detail[2]}, Zip: {detail[3]}, City: {detail[4]}")
     ###################################################################################################3
