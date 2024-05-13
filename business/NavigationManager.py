@@ -58,6 +58,24 @@ class HotelsFilter1(Menu):
                 return self._back
 
 
+class Current_Hotel(Menu):
+    def __init__(self, back, myhotel):
+        super().__init__("HomeScreen - Hotel")
+        self.add_option(MenuOption("View Hotel Details"))
+        self.myhotel = myhotel
+        self.add_option(MenuOption("Available Rooms"))
+        self.add_option(MenuOption("Quit"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 1:
+                return self._All_Hotels
+            case 2:
+                return self._Filter_Hotels1
+            case 3:
+                return self._back
+
 class AllHotels(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - All Hotel")
@@ -76,7 +94,8 @@ class AllHotels(Menu):
             return self._back
         elif 1 <= choice <= len(all_hotels):
             # Der Benutzer hat ein Hotel ausgewählt
-            return all_hotels[choice - 1]
+
+            return Current_Hotel(self, myhotel=all_hotels[choice - 1])
         else:
             print("Ungültige Auswahl.")
             return None
