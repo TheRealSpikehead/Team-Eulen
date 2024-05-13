@@ -13,15 +13,17 @@ search_manager = SearchManager(database_file)
 
 # Rufe die Methode get_all_hotels auf der Instanz auf
 all_hotels = search_manager.get_all_hotels()
+
+
 #available_hotels = search_manager.get_available_hotels(start_date=input("Start date: "), end_date=input("End date: "))
 
 class HotelsFilter2(Menu):
     def __init__(self, back, start_date, end_date, city, max_guests):
         super().__init__("Hotelreservationsystem - Available Hotel")
-        self.start_date = start_date
-        self.end_date = end_date
-        self.city = city
-        self.max_guests = max_guests
+        #self.start_date = start_date
+        #self.end_date = end_date
+        #self.city = city
+        #self.max_guests = max_guests
         self.available_hotels = search_manager.get_available_hotels(city, start_date, end_date, max_guests)
         for hotel in self.available_hotels:
             self.add_option(MenuOption(hotel[0]))
@@ -57,22 +59,61 @@ class HotelsFilter1(Menu):
             case 2:
                 return self._back
 
+class AvailableRooms(Menu):
+    def __init__(self, back, myhotel, start_date, end_date, max_guests):
+        super().__init__("Hotelreservationsystem - Available Rooms")
+        Hotel_name = myhotel
+        self.available_rooms = search_manager.get_available_rooms(Hotel_name, start_date, end_date, max_guests)
+        for rooms in self.available_rooms:
+            self.add_option(MenuOption(f"Room Number:{rooms[2]}"))
+        self.add_option(MenuOption("Quit"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        if choice == len(self.available_rooms) + 1:
+            # Benutzer hat "Back" ausgewählt
+            return self._back
+        elif 1 <= choice <= len(self.available_rooms):
+            # Der Benutzer hat ein Hotel ausgewählt
+            return self.available_rooms[choice - 1]
+        else:
+            print("Ungültige Auswahl.")
+            return None
+
+class HotelDetails(Menu):
+    def __init__(self, back, myhotel):
+        super().__init__("Hotelreservierungssystem - Hotel Information")
+        details = search_manager.get_hotel_information(myhotel)
+        for detail in details:
+            self.add_option(MenuOption(f"Name: {detail[0]}"))
+            self.add_option(MenuOption(f"Stars: {detail[1]}"))
+            self.add_option(MenuOption(f"Street: {detail[2]}"))
+            self.add_option(MenuOption(f"Zip: {detail[3]}"))
+            self.add_option(MenuOption(f"City: {detail[4]}"))
+        self.add_option(MenuOption("Quit"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 6:
+                return self._back
 
 class Current_Hotel(Menu):
     def __init__(self, back, myhotel):
-        super().__init__("HomeScreen - Hotel")
+        super().__init__("Hotelreservierungssystem - Hotel")
         self.add_option(MenuOption("View Hotel Details"))
-        self.myhotel = myhotel
+        self._HotelDetails = HotelDetails(self, myhotel)
         self.add_option(MenuOption("Available Rooms"))
+        self._myhotel = myhotel
         self.add_option(MenuOption("Quit"))
         self._back = back
 
     def _navigate(self, choice: int):
         match choice:
             case 1:
-                return self._All_Hotels
+                return self._HotelDetails
             case 2:
-                return self._Filter_Hotels1
+                return AvailableRooms(self, self._myhotel, start_date=input("Start Date (YYYY-MM-DD): "), end_date=input("End Date (YYYY-MM-DD): "), max_guests=input("Number of Guests: "))
             case 3:
                 return self._back
 
@@ -94,8 +135,8 @@ class AllHotels(Menu):
             return self._back
         elif 1 <= choice <= len(all_hotels):
             # Der Benutzer hat ein Hotel ausgewählt
-
-            return Current_Hotel(self, myhotel=all_hotels[choice - 1])
+            myhotel = all_hotels[choice - 1]
+            return Current_Hotel(self, myhotel)
         else:
             print("Ungültige Auswahl.")
             return None
