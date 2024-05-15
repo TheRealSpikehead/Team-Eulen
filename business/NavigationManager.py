@@ -59,13 +59,50 @@ class HotelsFilter1(Menu):
             case 2:
                 return self._back
 
+class RoomDetails(Menu):
+    def __init__(self, back, myroom):
+        super().__init__("Hotelreservierungssystem - Hotel Information")
+        details = search_manager.get_room_details(myroom)
+        for detail in details:
+            self.add_option(MenuOption(f"Number: {detail[0]}"))
+            self.add_option(MenuOption(f"Type: {detail[1]}"))
+            self.add_option(MenuOption(f"Number of Guests: {detail[2]}"))
+            self.add_option(MenuOption(f"Amenities: {detail[3]}"))
+            self.add_option(MenuOption(f"Description: {detail[4]}"))
+        self.add_option(MenuOption("Quit"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 6:
+                return self._back
+
+class Current_Room(Menu):
+    def __init__(self, back, myroom):
+        super().__init__("Hotelreservierungssystem - Room")
+        self.add_option(MenuOption("View Room Details"))
+        self._RoomDetails = RoomDetails(self, myroom)
+        self.add_option(MenuOption("Make a Reservation"))
+        self._myroom = myroom
+        self.add_option(MenuOption("Quit"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 1:
+                return self._RoomDetails
+            case 2:
+                return None
+            case 3:
+                return self._back
+
 class AvailableRooms(Menu):
     def __init__(self, back, myhotel, start_date, end_date, max_guests):
         super().__init__("Hotelreservationsystem - Available Rooms")
         Hotel_name = myhotel
         self.available_rooms = search_manager.get_available_rooms(Hotel_name, start_date, end_date, max_guests)
         for rooms in self.available_rooms:
-            self.add_option(MenuOption(f"Room Number:{rooms[2]}"))
+            self.add_option(MenuOption(f"Room Number:{rooms[0]}"))
         self.add_option(MenuOption("Quit"))
         self._back = back
 
@@ -75,10 +112,33 @@ class AvailableRooms(Menu):
             return self._back
         elif 1 <= choice <= len(self.available_rooms):
             # Der Benutzer hat ein Hotel ausgewählt
-            return self.available_rooms[choice - 1]
+            myroom = self.available_rooms[choice - 1]
+            return Current_Room(self, myroom)
         else:
             print("Ungültige Auswahl.")
             return None
+
+#class AllRooms(Menu):
+#    def __init__(self, back, myhotel):
+#        super().__init__("Hotelreservationsystem - All Rooms")
+#        Hotel_name = myhotel
+#        self.all_rooms = search_manager.get_all_rooms(Hotel_name)
+#        for allrooms in self.all_rooms:
+#            self.add_option(MenuOption(allrooms))
+#        self.add_option(MenuOption("Quit"))
+#        self._back = back
+#
+#    def _navigate(self, choice: int):
+#        if choice == len(self.all_rooms) + 1:
+#            # Benutzer hat "Back" ausgewählt
+#            return self._back
+#        elif 1 <= choice <= len(self.all_rooms):
+            # Der Benutzer hat ein Hotel ausgewählt
+#            myroom = self.all_rooms[choice - 1]
+#            return Current_Room(self, myroom)
+#        else:
+#            print("Ungültige Auswahl.")
+#            return None
 
 class HotelDetails(Menu):
     def __init__(self, back, myhotel):
@@ -103,6 +163,7 @@ class Current_Hotel(Menu):
         super().__init__("Hotelreservierungssystem - Hotel")
         self.add_option(MenuOption("View Hotel Details"))
         self._HotelDetails = HotelDetails(self, myhotel)
+        #self.add_option(MenuOption("View All Rooms"))
         self.add_option(MenuOption("Available Rooms"))
         self._myhotel = myhotel
         self.add_option(MenuOption("Quit"))
@@ -112,8 +173,10 @@ class Current_Hotel(Menu):
         match choice:
             case 1:
                 return self._HotelDetails
+            #case 2:
+            #    return AllRooms(self, self._myhotel)
             case 2:
-                return AvailableRooms(self, self._myhotel, start_date=input("Start Date (YYYY-MM-DD): "), end_date=input("End Date (YYYY-MM-DD): "), max_guests=input("Number of Guests: "))
+                return AvailableRooms(self, self._myhotel, start_date=input("Start Date (YYYY-MM-DD): "),end_date=input("End Date (YYYY-MM-DD): "), max_guests=input("Number of Guests: "))
             case 3:
                 return self._back
 

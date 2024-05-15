@@ -41,13 +41,17 @@ class SearchManager(object):
         return allhotels
 
 
-    def get_all_rooms(self):
-        query = select(Room)
+    def get_all_rooms(self, Hotel_name):
+        query = select(Room.number). \
+            select_from(Hotel). \
+            outerjoin(Room, Hotel.id == Room.hotel_id). \
+            where(and_(Hotel.name == Hotel_name))
         rooms = self.__session.execute(query).scalars().all()
         return rooms
 
     def get_available_rooms(self, Hotel_name: str, start_date: date, end_date: date, max_guests: int):  # 1.1.4
-        query = select(Hotel.name, Hotel.stars, Room.number, Room.max_guests). \
+        query = select(Room.number). \
+            select_from(Hotel). \
             join(Address). \
             outerjoin(Room, Hotel.id == Room.hotel_id). \
             outerjoin(Booking, and_(Room.number == Booking.id,
@@ -72,7 +76,7 @@ class SearchManager(object):
         available_rooms = self.__session.execute(query).fetchall()
         return available_rooms
 
-    def get_hotel_information(self,Hotel_name):  # 1.1.5
+    def get_hotel_information(self, Hotel_name):  # 1.1.5
         j = join(Hotel, Address, Hotel.address_id == Address.id)
         query = select(Hotel.name, Hotel.stars, Address.street, Address.zip, Address.city).select_from(j).\
             where(and_(Hotel.name == Hotel_name))
@@ -80,11 +84,11 @@ class SearchManager(object):
         return details
 
 
-    def get_room_details(self, hotel_name=None):
+    def get_room_details(self, room_number):
         j = join(Hotel, Room, Hotel.id == Room.hotel_id)
-        query = select(Room.number,Room.type, Room.max_guests, Room.amenities, Room.description).select_from(j)
-        if hotel_name:
-            query = query.where(Hotel.name == hotel_name)
+        query = select(Room.number, Room.type, Room.max_guests, Room.amenities, Room.description).select_from(j)
+        if room_number:
+            query = query.where(Room.number == room_number)
         room_details = self.__session.execute(query)
         return room_details
 
