@@ -50,8 +50,7 @@ class SearchManager(object):
         return rooms
 
     def get_available_rooms(self, Hotel_name: str, start_date: date, end_date: date, max_guests: int):  # 1.1.4
-        query = select(Room.number). \
-            select_from(Hotel). \
+        query = select(Room.number, Hotel). \
             join(Address). \
             outerjoin(Room, Hotel.id == Room.hotel_id). \
             outerjoin(Booking, and_(Room.number == Booking.id,
@@ -84,11 +83,11 @@ class SearchManager(object):
         return details
 
 
-    def get_room_details(self, room_number):
+    def get_room_details(self, room_number, Hotel_name):
         j = join(Hotel, Room, Hotel.id == Room.hotel_id)
         query = select(Room.number, Room.type, Room.max_guests, Room.amenities, Room.description).select_from(j)
         if room_number:
-            query = query.where(Room.number == room_number)
+            query = query.where(Room.number == room_number, Hotel.name == Hotel_name)
         room_details = self.__session.execute(query)
         return room_details
 
