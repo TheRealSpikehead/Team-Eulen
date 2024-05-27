@@ -106,9 +106,9 @@ if __name__ == "__main__":
     Hotel_name = "Hotel Amaris"
     max_guests = 2
 
-    available_rooms = sm.get_available_rooms(Hotel_name, start_date, end_date, max_guests)
-    for hotel in available_rooms:
-        print(f"Hotel: {hotel[0]}, Stars: {hotel[1]}, Room: {hotel[2]}, Capacity: {hotel[3]}")
+    #available_rooms = sm.get_available_rooms(Hotel_name, start_date, end_date, max_guests)
+    #for hotel in available_rooms:
+    #    print(f"Hotel: {hotel[0]}, Stars: {hotel[1]}, Room: {hotel[2]}, Capacity: {hotel[3]}")
 
     # hotels = sm.list_hotels()
     # print("Available hotels:")
