@@ -37,7 +37,8 @@ class HotelsFilter2(Menu):
             return self._back
         elif 1 <= choice <= len(self.available_hotels):
             # Der Benutzer hat ein Hotel ausgewählt
-            return self.available_hotels[choice - 1]
+            myhotel = self.available_hotels[choice - 1][0]
+            return Current_Hotel(self, myhotel)
         else:
             print("Ungültige Auswahl.")
             return None
