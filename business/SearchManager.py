@@ -36,7 +36,7 @@ class SearchManager(object):
 
 
     def get_all_hotels(self):
-        query = select(Hotel)
+        query = select(Hotel.name, Hotel)
         allhotels = self.__session.execute(query).scalars().all()
         return allhotels
 
@@ -63,7 +63,7 @@ class SearchManager(object):
         return available_rooms2
 
     def get_available_hotels(self, city: str, start_date: date, end_date: date, max_guests: int):  # 1.1.4
-        query = select(Hotel.name, Hotel.stars, Room.number, Room.max_guests). \
+        query = select (Hotel.name, Hotel.stars). \
             join(Address). \
             outerjoin(Room, Hotel.id == Room.hotel_id). \
             outerjoin(Booking, and_(Room.number == Booking.id,

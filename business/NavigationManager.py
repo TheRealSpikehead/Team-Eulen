@@ -25,7 +25,8 @@ class HotelsFilter2(Menu):
         #self.city = city
         #self.max_guests = max_guests
         self.available_hotels = search_manager.get_available_hotels(city, start_date, end_date, max_guests)
-        for hotel in self.available_hotels:
+        unique_hotels = set(self.available_hotels)
+        for hotel in unique_hotels:
             self.add_option(MenuOption(hotel[0]))
         self.add_option(MenuOption("Quit"))
         self._back = back
@@ -184,7 +185,7 @@ class AllHotels(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - All Hotel")
         for hotel in all_hotels:
-            self.add_option(MenuOption(hotel.name))
+            self.add_option(MenuOption(hotel))
 #        start_index = 0
 #       self.add_option(MenuOption(all_hotels[0]))
 #       self.add_option(MenuOption(all_hotels[1]))
