@@ -184,7 +184,7 @@ class AllHotels(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - All Hotel")
         for hotel in all_hotels:
-            self.add_option(MenuOption(hotel))
+            self.add_option(MenuOption(hotel.name))
 #        start_index = 0
 #       self.add_option(MenuOption(all_hotels[0]))
 #       self.add_option(MenuOption(all_hotels[1]))

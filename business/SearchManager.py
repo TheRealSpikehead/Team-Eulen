@@ -36,7 +36,7 @@ class SearchManager(object):
 
 
     def get_all_hotels(self):
-        query = select(Hotel.name, Hotel)
+        query = select(Hotel)
         allhotels = self.__session.execute(query).scalars().all()
         return allhotels
 
