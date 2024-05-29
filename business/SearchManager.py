@@ -143,7 +143,7 @@ if __name__ == "__main__":
     # # Konvertierung der Sterne-Eingabe in einen Integer, falls nicht leer
     # stars = int(stars_input) if stars_input.isdigit() else None
     #
-    # # Suche durchführen
+    # Suche durchführen
     # hotels = sm.get_hotels(name=name if name else None, stars=stars, address=address if address else None)
     #
     # if hotels:
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     #         print(hotel)  # Angenommen, `hotel` ist eine Instanz, die sinnvoll als String dargestellt werden kann
     # else:
     #     print("Keine Hotels gefunden, die den Kriterien entsprechen.")
-
+    #
     # hotels = sm.get_hotels()
     # for hotel in hotels:
     #     print(hotel)
