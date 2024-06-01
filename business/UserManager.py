@@ -6,7 +6,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, scoped_session, Session
 
-from data_models.models import Login, RegisteredGuest, Role, Address, Login
+from data_models.models import Login, RegisteredGuest, Role, Address, Login, Guest
 from data_access.data_base import init_db
 
 
@@ -40,7 +40,22 @@ class UserManager:
     def get_current_login(self):
         return self._current_login
 
-    def create_registered_guest(self, firstname, lastname, email, street, zip, city, username, password):
+    def create_guest(self, first_name, last_name, email, street, zip, city, bookings):
+        query = select(Role).where(Role.name == "guest")
+        role = self._session.execute(query).scalars().one()
+        new_guest = Guest(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            street=street,
+            zip=zip,
+            city=city,
+            bookings=bookings,
+        )
+        self._session.add(new_guest)
+        self._session.commit()
+
+    def create_registered_guest(self, firstname, lastname, email, street, zip, city, username, password, bookings):
         query = select(Role).where(Role.name == "registered_guest")
         role = self._session.execute(query).scalars().one()
         new_registered_guest = RegisteredGuest(
@@ -53,11 +68,16 @@ class UserManager:
         self._session.add(new_registered_guest)
         self._session.commit()
 
-    def create_admin(self, was_brauch_ich_für_parameter):
-        pass
 
-    def register_admin(self, username, password):
-        query = select(Role).where(Role.name == "registered_user")
+    def create_admin(self, username, password):
+        query = select(Role).where(Role.name == "registered_admin")
+        role = self._session.execute(query).scalars().one()
+        new_registered_admin = Registered_admin(
+            Username=username,
+            password=password,
+        )
+        self._session.add(new_registered_admin)
+        self._session.commit()
 
     def get_registered_guest(self, login):
         query = select(RegisteredGuest).where(RegisteredGuest.login == login)
@@ -81,7 +101,7 @@ if __name__ == "__main__":
     session = scoped_session(sessionmaker(bind=engine))
     user_manager = UserManager(session)
 
-    print("US: 2.1 - Login")
+    #print("US: 2.1 - Login")
 
     # wenn sich ein Benutzer registrieren will
     print("Register User")
