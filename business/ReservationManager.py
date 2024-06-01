@@ -12,18 +12,19 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from data_access.data_base import init_db
-from data_models.models import Room, Guest, Booking, RegisteredGuest
+from data_models.models import Room, Guest, Booking, RegisteredGuest, Hotel
 
 
-class ReservationManager(Manager):
-    def __init__(self, db_file):
-        if not db_file.is_file():
-            init_db(str(db_file), generate_example_data=True)
-        self._engine = create_engine(f'sqlite:///{db_file}')
+class ReservationManager(object):
+    def __init__(self, database_file):
+        database_path = Path(database_file)
+        if not database_path.is_file():
+            init_db(str(database_file), generate_example_data=True)
+        self._engine = create_engine(f'sqlite:///{database_file}')
         self._session = scoped_session(sessionmaker(bind=self._engine))
 
-    def make_booking(self, room_id:int, guest_id:int, number_of_guests:int, start_date: datetime, end_date: datetime, comment:str = None):
-        query_room = select(Room).where(Room.id == room_id)
+    def make_booking(self, Hotel_name:str, room_id:int, guest_id:int, number_of_guests:int, start_date: datetime, end_date: datetime, comment:str = None):
+        query_room = select(Room).where(Room.number == room_id, Hotel.name == Hotel_name)
         room = self._session.execute(query_room).scalars().one()
         query_guest = select(Guest).where(Guest.id == guest_id)
         guest = self._session.execute(query_guest).scalars().one()
