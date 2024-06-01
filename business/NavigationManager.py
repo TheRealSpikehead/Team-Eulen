@@ -27,7 +27,21 @@ all_hotels = search_manager.get_all_hotels()
 #Dies wird durch die Verwendung von der If else funktion erreicht. Aufpassen bei match choices. Dort weiss ich noch nicht wie ich das Lösen kann.
 #Dazu muss aber zuerst der UserManager stehen.
 
+class BookingHistory(Menu):
+    def __init__(self, back, Registered_User):
+        super().__init__("Hotelreservationsystem - Booking Overview")
+        self.booking_history = reservation_manager.get_bookings(registered_guest=Registered_User)
+        for booking in self.booking_history:
+            self.add_option(MenuOption(booking))
+        self.add_option(MenuOption("Back"))
+        self._back = back
 
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                return self._back
+
+#----------------------------------------------------------------------------------Admin
 #class AllRooms(Menu):
 #    def __init__(self, back, myhotel):
 #        super().__init__("Hotelreservationsystem - All Rooms")
@@ -54,9 +68,6 @@ class BookingOverview(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Booking Overview")
         inventory_manager.get_all_bookings_grouped_by_hotel()
-        #self.booking_overview = inventory_manager.get_all_bookings_grouped_by_hotel()
-        #for booking in self.booking_overview:
-        #    self.add_option(MenuOption(booking))
         self.add_option(MenuOption("Above you see the list of all bookings"))
         self.add_option(MenuOption("Back"))
         self._back = back
@@ -107,27 +118,6 @@ class AddHotel(Menu):
         match choice:
             case 2:
                 return self._back
-
-#class HomeScreenAdmin(Menu):
-#    def __init__(self, back, Admin):
-#        super().__init__("HomeScreen - Admin")
-#        self.add_option(MenuOption("View all Hotels"))
-#        self._All_Hotels_Admin = AllHotelsAdmin(self)
-#        self.add_option(MenuOption("Add Hotel"))
-#        self.add_option(MenuOption("Delete Hotel"))
-#        self.add_option(MenuOption("View all Bookings"))
-#        self.add_option(MenuOption("Quit"))
-#        self._back = back
-
-#    def _navigate(self, choice: int):
-#        match choice:
-#            case 1:
-#                return self._All_Hotels_Admin
-    #        case 2:
-    #            new_adress = Adress(street=input("Enter name of street: "), zip=input("Enter zip code: "), city=input("Enter city: "))
-    #            return AddHotel(self, name=input("Enter name of new Hotel: "), stars=input("Enter number of stars: "), adress_id=new_adress.id)
-#            case 3:
-#                return self._back
 
 #---------------------------------------------------------------------------Guest
 class HotelsFilter2(Menu):
@@ -348,12 +338,13 @@ class HomeScreen(Menu):
             case 2:
                 return self._Filter_Hotels1
             case 3:
-                if self._login is not None:
-                    return AddHotel(self)
-                elif self._isadmin == False:
-                    return #BookingHistory
-                else:
+                if self._login is None:
                     return self._back
+                elif self._isadmin == False:
+                    Registered_User =user_manager.get_registered_guest(login=self._login)
+                    return BookingHistory(self, Registered_User)
+                else:
+                    return AddHotel(self)
             case 4:
                 if self._isadmin == False:
                     user_manager.logout()
