@@ -49,47 +49,50 @@ all_hotels = search_manager.get_all_hotels()
 #        else:
 #            print("Ungültige Auswahl.")
 #            return None
-#class Current_Hotel_Admin(Menu):
-#    def __init__(self, back, myhotel):
-#        super().__init__("Hotelreservierungssystem - Hotel")
-#        self.add_option(MenuOption("View Hotel Details"))
-#        self._HotelDetails = HotelDetails(self, myhotel)
-#        #self.add_option(MenuOption("View All Rooms"))
-#        self.add_option(MenuOption("Available Rooms"))
-#        self._myhotel = myhotel
-#        self.add_option(MenuOption("Quit"))
-#        self._back = back
 
-#    def _navigate(self, choice: int):
-#        match choice:
-#            case 1:
-#                return self._HotelDetails
-            #case 2:
-            #    return AllRooms(self, self._myhotel)
-#            case 2:
-#                return AvailableRooms(self, self._myhotel, start_date=input("Start Date (YYYY-MM-DD): "),end_date=input("End Date (YYYY-MM-DD): "), max_guests=input("Number of Guests: "))
-#            case 3:
-#                return self._back
+class BookingOverview(Menu):
+    def __init__(self, back):
+        super().__init__("Hotelreservationsystem - Booking Overview")
+        inventory_manager.get_all_bookings_grouped_by_hotel()
+        #self.booking_overview = inventory_manager.get_all_bookings_grouped_by_hotel()
+        #for booking in self.booking_overview:
+        #    self.add_option(MenuOption(booking))
+        self.add_option(MenuOption("Above you see the list of all bookings"))
+        self.add_option(MenuOption("Back"))
+        self._back = back
 
-#class AllHotelsAdmin(Menu):
-#    def __init__(self, back):
-#        super().__init__("Hotelreservationsystem - All Hotel")
-#        for hotel in all_hotels:
-#            self.add_option(MenuOption(hotel))
-#        self.add_option(MenuOption("Quit"))
-#        self._back = back
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                return self._back
 
-#    def _navigate(self, choice: int):
-#        if choice == len(all_hotels) + 1:
-            # Benutzer hat "Back" ausgewählt
-#           return self._back
-#        elif 1 <= choice <= len(all_hotels):
-            # Der Benutzer hat ein Hotel ausgewählt
-#            myhotelAdmin = all_hotels[choice - 1]
-#            return Current_Hotel_Admin(self, myhotelAdmin)
-#        else:
-#            print("Ungültige Auswahl.")
-#            return None
+class UpdateHotel(Menu):
+    def __init__(self, back):
+        super().__init__("Hotelreservationsystem - Update Hotel")
+        self.update_hotel = inventory_manager.update_hotel()
+        for hotel in self.update_hotel:
+            self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{hotel[0]}"))
+        self.add_option(MenuOption("Quit"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                return self._back
+
+class DeleteHotel(Menu):
+    def __init__(self, back):
+        super().__init__("Hotelreservationsystem - Hotel Deletion")
+        self.delete_hotel = inventory_manager.remove_hotel()
+        for hotel in self.delete_hotel:
+            self.add_option(MenuOption(f"Congratulation! You removed the following hotel:{hotel[0]}"))
+        self.add_option(MenuOption("Quit"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                return self._back
 
 class AddHotel(Menu):
     def __init__(self, back):
@@ -320,13 +323,20 @@ class HomeScreen(Menu):
         self._All_Hotels = AllHotels(self)
         self.add_option(MenuOption("Filter Hotels"))
         self._Filter_Hotels1 = HotelsFilter1(self)
-        isadmin = user_manager.is_admin(login)
-        if isadmin == True:
-            self.add_option(MenuOption("Add Hotel"))
-            self.add_option(MenuOption("Delete Hotel"))
-            self.add_option(MenuOption("View all Bookings"))
-            self.add_option(MenuOption("Quit"))
-            self._back = back
+        self._login = login
+        if login is not None:
+            self._isadmin = user_manager.is_admin(login)
+            if self._isadmin == True:
+                self.add_option(MenuOption("Add Hotel"))
+                self.add_option(MenuOption("Delete Hotel"))
+                self.add_option(MenuOption("Update Hotel"))
+                self.add_option(MenuOption("View all Bookings"))
+                self.add_option(MenuOption("Quit"))
+                self._back = back
+            else:
+                self.add_option(MenuOption("View Booking history"))
+                self.add_option(MenuOption("Quit"))
+                self._back = back
         else:
             self.add_option(MenuOption("Quit"))
             self._back = back
@@ -338,14 +348,24 @@ class HomeScreen(Menu):
             case 2:
                 return self._Filter_Hotels1
             case 3:
-                return AddHotel(self)
+                if self._login is not None:
+                    return AddHotel(self)
+                elif self._isadmin == False:
+                    return #BookingHistory
+                else:
+                    return self._back
             case 4:
-                return
+                if self._isadmin == False:
+                    user_manager.logout()
+                    return self._back
+                else:
+                    return DeleteHotel(self)
             case 5:
-                return
+                return UpdateHotel(self)
             case 6:
-                return self._back
+                return BookingOverview(self)
             case 7:
+                user_manager.logout()
                 return self._back
 
 #---------------------------------------------------------------------------Base
@@ -362,7 +382,8 @@ class HotelMenu(Menu):
     def _navigate(self, choice: int):
         match choice:
             case 1:
-                return HomeScreen(self)
+                login = None
+                return HomeScreen(self, login)
             case 2:
                 user_manager.has_attempts_left()
                 login = user_manager.login(username=input("Username: "), password=input("Password: "))
