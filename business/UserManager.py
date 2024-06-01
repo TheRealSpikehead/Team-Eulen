@@ -70,6 +70,7 @@ class UserManager:
         self._session.commit()
 
 
+#Robin, siehst du mich?
     def create_admin(self, username, password):
         query = select(Role).where(Role.name == "registered_admin")
         role = self._session.execute(query).scalars().one()
