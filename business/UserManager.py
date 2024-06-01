@@ -4,19 +4,15 @@ import sys
 from pathlib import Path
 
 from sqlalchemy import create_engine, select
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session, Session
 
-from data_models.models import Login, RegisteredGuest
+from data_models.models import Login, RegisteredGuest, Role, Address, Login
 from data_access.data_base import init_db
 
 
 class UserManager:
-    def __init__(self, database_file) -> object:
-        database_path = Path(database_file)
-        if not database_path.is_file():
-            init_db(database_file, generate_example_data=True)
-        self.__engine = create_engine(f'sqlite:///{database_file}', echo=False)
-        self.__session = scoped_session(sessionmaker(bind=self.__engine))
+    def __init__(self, session: scoped_session):
+        self._session = session
         self._MAX_ATTEMPTS = 3
         self._attempts_left = self._MAX_ATTEMPTS
         self._current_login = None
@@ -30,7 +26,7 @@ class UserManager:
     def login(self, username, password):
         if self.has_attempts_left():
             query = select(Login).where(Login.username == username).where(Login.password == password)
-            result = self.__session.execute(query).scalars().one_or_none()
+            result = self._session.execute(query).scalars().one_or_none()
             self._attempts_left -= 1
             self._current_login = result
             return result
@@ -44,23 +40,28 @@ class UserManager:
     def get_current_login(self):
         return self._current_login
 
-    def create_registered_guest(self, username, password):
-        # get registered_guest role from db
-        role = None
-        # create RegisteredGuest object
-
-        reg_guest = RegisteredGuest(
-            login=Login(username, password, role)
+    def create_registered_guest(self, firstname, lastname, email, street, zip, city, username, password):
+        query = select(Role).where(Role.name == "registered_guest")
+        role = self._session.execute(query).scalars().one()
+        new_registered_guest = registered_guest(
+            firstname=firstname,
+            lastname=lastname,
+            email=email,
+            address=Address(street=street, zip=zip, city=city),
+            login=Login(username=username, password=password, role=role),
         )
-        self.__session.add(reg_guest)
-        self.__session.commit()
+        self._session.add(new_registered_guest_guest)
+        self._session.commit()
 
     def create_admin(self, was_brauch_ich_für_parameter):
         pass
 
+    def register_admin(self, username, password):
+        query = select(Role).where(Role.name == "registered_user")
+
     def get_registered_guest(self, login):
         query = select(RegisteredGuest).where(RegisteredGuest.login == login)
-        result = self.__session.execute(query).scalars().one_or_none()
+        result = self._session.execute(query).scalars().one_or_none()
         return result
 
     def is_admin(self, login:Login):
@@ -81,6 +82,19 @@ if __name__ == "__main__":
     user_manager = UserManager(session)
 
     print("US: 2.1 - Login")
+
+    # wenn sich ein Benutzer registrieren will
+    print("Register User")
+    firstname = input("First Name: ")
+    lastname = input("Last Name: ")
+    email = input("Email: ")
+    street = input("Street Address: ")
+    zip = input("Zip: ")
+    city = input("City: ")
+    Username = input("Username: ")
+    password = input("Password: ")
+    user_manager.register_guest(firstname, lastname, email, street, zip, city, password)
+
     while user_manager.has_attempts_left():
         in_username = input("Enter username: ")
         in_password = input("Enter password: ")
@@ -96,6 +110,8 @@ if __name__ == "__main__":
         else:
             reg_user = user_manager.get_registered_guest(user_manager.get_current_login())
             print(f"Welcome {reg_user.firstname} {reg_user.lastname}")
+            user_manager.logout()
+            print(user_manager.get_current_login())
     else:
         print("Too many attempts, close program")
         sys.exit(1)
@@ -103,4 +119,3 @@ if __name__ == "__main__":
 
 
     print("US: 2.2 - Register")
-
