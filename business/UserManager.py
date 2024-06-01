@@ -11,8 +11,12 @@ from data_access.data_base import init_db
 
 
 class UserManager:
-    def __init__(self, session: scoped_session):
-        self._session = session
+    def __init__(self, database_file) -> object:
+        database_path = Path(database_file)
+        if not database_path.is_file():
+            init_db(database_file, generate_example_data=True)
+        self.__engine = create_engine(f'sqlite:///{database_file}', echo=False)
+        self.__session = scoped_session(sessionmaker(bind=self.__engine))
         self._MAX_ATTEMPTS = 3
         self._attempts_left = self._MAX_ATTEMPTS
         self._current_login = None
@@ -26,7 +30,7 @@ class UserManager:
     def login(self, username, password):
         if self.has_attempts_left():
             query = select(Login).where(Login.username == username).where(Login.password == password)
-            result = self._session.execute(query).scalars().one_or_none()
+            result = self.__session.execute(query).scalars().one_or_none()
             self._attempts_left -= 1
             self._current_login = result
             return result
@@ -48,15 +52,15 @@ class UserManager:
         reg_guest = RegisteredGuest(
             login=Login(username, password, role)
         )
-        self._session.add(reg_guest)
-        self._session.commit()
+        self.__session.add(reg_guest)
+        self.__session.commit()
 
     def create_admin(self, was_brauch_ich_für_parameter):
         pass
 
     def get_registered_guest(self, login):
         query = select(RegisteredGuest).where(RegisteredGuest.login == login)
-        result = self._session.execute(query).scalars().one_or_none()
+        result = self.__session.execute(query).scalars().one_or_none()
         return result
 
     def is_admin(self, login:Login):
