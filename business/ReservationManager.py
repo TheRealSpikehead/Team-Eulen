@@ -4,6 +4,8 @@
 # Flavio
 # reservation_manager.py
 
+
+
 from pathlib import Path
 from math import modf
 from datetime import datetime, timedelta
@@ -20,14 +22,14 @@ class ReservationManager(object):
         database_path = Path(database_file)
         if not database_path.is_file():
             init_db(str(database_file), generate_example_data=True)
-        self._engine = create_engine(f'sqlite:///{database_file}')
-        self._session = scoped_session(sessionmaker(bind=self._engine))
+        self.__engine = create_engine(f'sqlite:///{database_file}')
+        self.__session = scoped_session(sessionmaker(bind=self.__engine))
 
     def make_booking(self, Hotel_name:str, room_id:int, guest_id:int, number_of_guests:int, start_date: datetime, end_date: datetime, comment:str = None):
         query_room = select(Room).where(Room.number == room_id, Hotel.name == Hotel_name)
-        room = self._session.execute(query_room).scalars().one()
+        room = self.__session.execute(query_room).scalars().one()
         query_guest = select(Guest).where(Guest.id == guest_id)
-        guest = self._session.execute(query_guest).scalars().one()
+        guest = self.__session.execute(query_guest).scalars().one()
         if number_of_guests <= room.max_guests:
             new_booking = Booking(
                 room=room,
@@ -37,8 +39,8 @@ class ReservationManager(object):
                 end_date=end_date,
                 comment=comment
             )
-            self._session.add(new_booking)
-            self._session.commit()
+            self.__session.add(new_booking)
+            self.__session.commit()
             return new_booking
         else:
             raise ValueError('Number of guests is bigger than the room allows')
@@ -61,9 +63,9 @@ class ReservationManager(object):
         result = round(price+diff, 2)
         return result
 
-    def get_bookings(self, registered_guest:RegisteredGuest):
-        query = select(Booking).where(Booking.guest == registered_guest)
-        result = self._session.execute(query).scalars().all()
+    def get_bookings(self, guest_id):
+        query = select(Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date).where(Booking.guest_id == guest_id)
+        result = self.__session.execute(query).fetchall()
         return result
 
 if __name__ == '__main__':

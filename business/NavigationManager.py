@@ -28,18 +28,24 @@ all_hotels = search_manager.get_all_hotels()
 #Dazu muss aber zuerst der UserManager stehen.
 
 class BookingHistory(Menu):
-    def __init__(self, back, Registered_User):
+    def __init__(self, back, login):
         super().__init__("Hotelreservationsystem - Booking Overview")
-        self.booking_history = reservation_manager.get_bookings(registered_guest=Registered_User)
+        guest_id = user_manager.get_registered_guest(login)
+        self.booking_history = reservation_manager.get_bookings(guest_id)
         for booking in self.booking_history:
-            self.add_option(MenuOption(booking))
+            self.add_option(MenuOption(f"Room number: {booking[0]} / Number of guests: {booking[1]} / Start Date: {booking[2]} / End Date: {booking[3]}"))
         self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
-        match choice:
-            case 2:
-                return self._back
+        if choice == len(self.booking_history) + 1:
+            # Benutzer hat "Back" ausgewählt
+            return self._back
+        elif 1 <= choice <= len(self.booking_history):
+            return None
+        else:
+            print("Ungültige Auswahl.")
+            return None
 
 #----------------------------------------------------------------------------------Admin
 #class AllRooms(Menu):
@@ -341,8 +347,7 @@ class HomeScreen(Menu):
                 if self._login is None:
                     return self._back
                 elif self._isadmin == False:
-                    Registered_User =user_manager.get_registered_guest(login=self._login)
-                    return BookingHistory(self, Registered_User)
+                    return BookingHistory(self, self._login)
                 else:
                     return AddHotel(self)
             case 4:

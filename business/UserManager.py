@@ -12,8 +12,12 @@ from data_access.data_base import init_db
 
 
 class UserManager:
-    def __init__(self, session: scoped_session):
-        self._session = session
+    def __init__(self, database_file):
+        database_path = Path(database_file)
+        if not database_path.is_file():
+            init_db(database_file, generate_example_data=True)
+        self.__engine = create_engine(f'sqlite:///{database_file}', echo=False)
+        self._session = scoped_session(sessionmaker(bind=self.__engine))
         self._MAX_ATTEMPTS = 3
         self._attempts_left = self._MAX_ATTEMPTS
         self._current_login = None
@@ -82,7 +86,7 @@ class UserManager:
         self._session.commit()
 
     def get_registered_guest(self, login):
-        query = select(RegisteredGuest).where(RegisteredGuest.login == login)
+        query = select(RegisteredGuest.id).where(RegisteredGuest.login == login)
         result = self._session.execute(query).scalars().one_or_none()
         return result
 
