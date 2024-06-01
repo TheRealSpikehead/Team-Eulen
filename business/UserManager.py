@@ -43,14 +43,14 @@ class UserManager:
     def create_registered_guest(self, firstname, lastname, email, street, zip, city, username, password):
         query = select(Role).where(Role.name == "registered_guest")
         role = self._session.execute(query).scalars().one()
-        new_registered_guest = registered_guest(
+        new_registered_guest = RegisteredGuest(
             firstname=firstname,
             lastname=lastname,
             email=email,
             address=Address(street=street, zip=zip, city=city),
             login=Login(username=username, password=password, role=role),
         )
-        self._session.add(new_registered_guest_guest)
+        self._session.add(new_registered_guest)
         self._session.commit()
 
     def create_admin(self, was_brauch_ich_für_parameter):
@@ -115,7 +115,3 @@ if __name__ == "__main__":
     else:
         print("Too many attempts, close program")
         sys.exit(1)
-
-
-
-    print("US: 2.2 - Register")
