@@ -3,6 +3,7 @@ from pathlib import Path
 from math import modf
 from datetime import datetime, timedelta
 
+import pygame
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -98,6 +99,8 @@ def create_booking():
 
         booking = manager.make_booking(room_id, guest_id, number_of_guests, start_date, end_date, comment)
 
+        price, price_mwst = manager.get_price(booking)
+
         # Überprüfen, ob ein Word-Dokument erstellt werden soll
         if create_doc_var.get() == 1:
             # Word-Dokument erstellen und Speicherort auswählen
@@ -112,14 +115,23 @@ def create_booking():
                 doc.add_paragraph(f'Kommentar: {comment}')
                 doc.add_paragraph(f'Raum ID: {room_id}')
                 doc.add_paragraph(f'Gast ID: {guest_id}')
+                doc.add_paragraph(f'Preis (ohne MwSt.): {price:.2f} CHF')
+                doc.add_paragraph(f'Preis (mit MwSt.): {price_mwst:.2f} CHF')
+
 
                 doc.save(file_path)
                 messagebox.showinfo("Erfolg", f"Buchung erfolgreich erstellt! Dokument gespeichert als {file_path}")
         else:
             messagebox.showinfo("Erfolg", "Buchung erfolgreich erstellt!")
 
+        # Sound abspielen
+        pygame.mixer.init()
+        pygame.mixer.music.load('mario.mp3')  # Pfad zur Sounddatei
+        pygame.mixer.music.play()
+
     except Exception as e:
         messagebox.showerror("Fehler", str(e))
+
 
 
 if __name__ == '__main__':
