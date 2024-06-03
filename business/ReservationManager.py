@@ -1,11 +1,4 @@
-# include all functions related to reservations here
-# make reservation, retrieve all reservations for a hotel, retrieve reservations for a user
-# check for appropriate user roles inside the functions
-# Flavio
-# reservation_manager.py
-
-
-
+import os
 from pathlib import Path
 from math import modf
 from datetime import datetime, timedelta
@@ -14,22 +7,21 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from data_access.data_base import init_db
-from data_models.models import Room, Guest, Booking, RegisteredGuest, Hotel
+from data_models.models import Room, Guest, Booking, RegisteredGuest
 
 
-class ReservationManager(object):
-    def __init__(self, database_file):
-        database_path = Path(database_file)
-        if not database_path.is_file():
-            init_db(str(database_file), generate_example_data=True)
-        self.__engine = create_engine(f'sqlite:///{database_file}')
-        self.__session = scoped_session(sessionmaker(bind=self.__engine))
+class ReservationManager:
+    def __init__(self, db_file):
+        if not db_file.is_file():
+            init_db(str(db_file), generate_example_data=True)
+        self._engine = create_engine(f'sqlite:///{db_file}')
+        self._session = scoped_session(sessionmaker(bind=self._engine))
 
-    def make_booking(self, Hotel_name:str, room_id:int, guest_id:int, number_of_guests:int, start_date: datetime, end_date: datetime, comment:str = None):
-        query_room = select(Room).where(Room.number == room_id, Hotel.name == Hotel_name)
-        room = self.__session.execute(query_room).scalars().one()
+    def make_booking(self, room_id:int, guest_id:int, number_of_guests:int, start_date: datetime, end_date: datetime, comment:str = None):
+        query_room = select(Room).where(Room.id == room_id)
+        room = self._session.execute(query_room).scalars().one()
         query_guest = select(Guest).where(Guest.id == guest_id)
-        guest = self.__session.execute(query_guest).scalars().one()
+        guest = self._session.execute(query_guest).scalars().one()
         if number_of_guests <= room.max_guests:
             new_booking = Booking(
                 room=room,
@@ -39,8 +31,8 @@ class ReservationManager(object):
                 end_date=end_date,
                 comment=comment
             )
-            self.__session.add(new_booking)
-            self.__session.commit()
+            self._session.add(new_booking)
+            self._session.commit()
             return new_booking
         else:
             raise ValueError('Number of guests is bigger than the room allows')
@@ -63,16 +55,16 @@ class ReservationManager(object):
         result = round(price+diff, 2)
         return result
 
-    def get_bookings(self, guest_id):
-        query = select(Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date).where(Booking.guest_id == guest_id)
-        result = self.__session.execute(query).fetchall()
+    def get_bookings(self, registered_guest:RegisteredGuest):
+        query = select(Booking).where(Booking.guest == registered_guest)
+        result = self._session.execute(query).scalars().all()
         return result
 
 if __name__ == '__main__':
-    manager = ReservationManager(Path("../data/test.db"))
+    manager = ReservationManager(Path("../data/database.db"))
 
     date_format = '%d.%m.%Y'
-    in_date = input("Enter start date (DD.MM.YYY): ")
+    in_date = input("Enter start date (DD.MM.YYYY): ")
 
     start_date = datetime.strptime(in_date, date_format)
     duration = input("Enter how many days you stay: ")
@@ -82,4 +74,3 @@ if __name__ == '__main__':
     number_of_guests = int(number_of_guests)
     comment = input("Enter any additional comment for your booking: ")
     booking = manager.make_booking(1, 4, number_of_guests, start_date, end_date, comment)
-

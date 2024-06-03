@@ -120,12 +120,11 @@ class Room(Base):
     '''
     Raum Entitätstyp.
     '''
-
     __tablename__ = "room"
-
-    hotel_id: Mapped[int] = mapped_column("hotel_id", ForeignKey("hotel.id"), primary_key=True)
+    id:Mapped[int] = mapped_column("id", primary_key=True)
+    hotel_id: Mapped[int] = mapped_column("hotel_id", ForeignKey("hotel.id"))
     hotel: Mapped["Hotel"] = relationship(back_populates="rooms")
-    number: Mapped[str] = mapped_column("number", primary_key=True)
+    number: Mapped[str] = mapped_column("number")
     type: Mapped[str] = mapped_column("type", nullable=True) # e.g. "family room", "single room", etc.
     max_guests: Mapped[int] = mapped_column("max_guests")
     description: Mapped[str] = mapped_column("description", nullable=True) # e.g. "Room with sea view"
@@ -141,6 +140,7 @@ class Booking(Base):
     Buchungs Entitätstyp.
     '''
 
+    room_id = None
     __tablename__ = "booking"
 
     id: Mapped[int] = mapped_column("id", primary_key=True)
