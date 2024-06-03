@@ -46,58 +46,21 @@ class SearchManager(object):
         return rooms
 
     # --------------------------get hotel information-------------------------------------------------------------------
-    def get_hotel_information(self):
-        query = select(
-            Hotel.name, Hotel.stars, Address.city, Address.street, Address.zip
-        ).join(Address, Hotel.address_id == Address.id)
-
-        result = self.__session.execute(query).fetchall()
-
-        if not result:
-            print("No hotel information found.")
-        else:
-            print("Hotel Information:")
-            current_hotel = None
-            for hotel in result:
-                if current_hotel != hotel.name:
-                    if current_hotel is not None:
-                        print("")
-                    current_hotel = hotel.name
-                    print(f"Hotel: {hotel.name}")
-                    print(f"    Stars: {hotel.stars}")
-                    print(f"    City: {hotel.city}")
-                    print(f"    Street: {hotel.street}")
-                    print(f"    Zip: {hotel.zip}")
-                else:
-
-                    print(f"    Stars: {hotel.stars}")
-                    print(f"    City: {hotel.city}")
-                    print(f"    Street: {hotel.street}")
-                    print(f"    Zip: {hotel.zip}")
+    def get_hotel_information(self, Hotel_name):  # 1.1.5
+        j = join(Hotel, Address, Hotel.address_id == Address.id)
+        query = select(Hotel.name, Hotel.stars, Address.street, Address.zip, Address.city).select_from(j).\
+            where(and_(Hotel.name == Hotel_name))
+        details = self.__session.execute(query).fetchall()
+        return details
 
     # ------------------------------get room details--------------------------------------------------------------------
-    def get_room_details(self):
-        query = select(Hotel.name, Room.number, Room.type,Room.price, Room.type,
-                       Room.description, Room.price, Room.amenities, Room.price).\
-            join(Hotel, Hotel.id == Room.hotel_id)
-
-        result = self.__session.execute(query).fetchall()
-
-        if not result:
-            print("No room details found.")
-        else:
-            print("Room Details:")
-            current_hotel = None
-            for room in result:
-                if current_hotel != room.name:
-                    # Neues Hotel, also drucken wir den Hotelnamen
-                    current_hotel = room.name
-                    print(f"\nHotel: {room.name}")
-                # Drucken der Zimmerdetails
-                print(
-                    f"  Number: {room.number}, Type: {room.type}, Price: {room.price}, "
-                    f"Amenities: {room.amenities}, Description: {room.description}"
-                )
+    def get_room_details(self, room_id):
+        j = join(Hotel, Room, Hotel.id == Room.hotel_id)
+        query = select(Room.number, Room.type, Room.max_guests, Room.amenities, Room.description).select_from(j)
+        if room_id:
+            query = query.where(Room.id == room_id)
+        room_details = self.__session.execute(query)
+        return room_details
 
     # -------------------------get available hotels---------------------------------------------------------------------
     def get_available_hotels(self):
@@ -161,14 +124,14 @@ class SearchManager(object):
         end_date = input("Enter end date (YYYY-MM-DD, leave blank if not specific): ") or None
         return city, stars, max_guests, start_date, end_date
 
-    def get_available_hotels_and_rooms(self, city, stars, max_guests, start_date, end_date):
+    def get_available_hotels_and_rooms(self, city: str, stars: int, max_guests: int, start_date: date, end_date: date):
 
         if start_date:
             start_date = datetime.strptime(start_date, '%Y-%m-%d')
         if end_date:
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
 
-        query = select(Hotel.name, Room.number, Room.description, Room.price). \
+        query = select(Hotel.name, Room.number, Room.description, Room.price, Room.id). \
             join(Address). \
             join(Room, Hotel.id == Room.hotel_id). \
             outerjoin(Booking, and_(Room.hotel_id == Booking.room_hotel_id, Room.number == Booking.room_number))
@@ -197,23 +160,25 @@ class SearchManager(object):
         if conditions:
             query = query.where(and_(*conditions))
 
-        available_rooms = self.__session.execute(query).all()
+        available_rooms = self.__session.execute(query).fetchall()
+        return available_rooms
 
-        if not available_rooms:
-            print("No available rooms found.")
-        else:
-            print("Available rooms:")
-            for room in available_rooms:
-                print(f"Hotel Name: {room[0]}, Room Number: {room[1]}, Description: {room[2]}, Price: {room[3]}")
+        #if not available_rooms:
+            #print("No available rooms found.")
+        #else:
+            #print("Available rooms:")
+            #for room in available_rooms:
+                #print(f"Hotel Name: {room[0]}, Room Number: {room[1]}, Description: {room[2]}, Price: {room[3]}")
 
 
 if __name__ == "__main__":
     sm = SearchManager('../data/database.db')
-    city, stars, max_guests, start_date, end_date = sm.get_userinput()
-    sm.get_available_hotels_and_rooms(city, stars, max_guests, start_date, end_date)
+    #city, stars, max_guests, start_date, end_date = sm.get_userinput()
+    #sm.get_available_hotels_and_rooms(city, stars, max_guests, start_date, end_date)
     # sm.get_available_hotels()
     # sm.get_room_details()
     # sm.get_hotel_information()
+    #sm.get_all_hotels()
 
 
 
