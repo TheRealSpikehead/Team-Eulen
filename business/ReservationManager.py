@@ -13,11 +13,12 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 
 
-class ReservationManager:
-    def __init__(self, db_file):
-        if not db_file.is_file():
-            init_db(str(db_file), generate_example_data=True)
-        self._engine = create_engine(f'sqlite:///{db_file}')
+class ReservationManager(object):
+    def __init__(self, database_file):
+        database_path = Path(database_file)
+        if not database_path.is_file():
+            init_db(str(database_file), generate_example_data=True)
+        self._engine = create_engine(f'sqlite:///{database_file}')
         self._session = scoped_session(sessionmaker(bind=self._engine))
 
     def make_booking(self, room_id: int, guest_id: int, number_of_guests: int, start_date: datetime, end_date: datetime,
@@ -59,9 +60,10 @@ class ReservationManager:
         result = round(price + diff, 2)
         return result
 
-    def get_bookings(self, registered_guest: RegisteredGuest):
-        query = select(Booking).where(Booking.guest == registered_guest)
-        result = self._session.execute(query).scalars().all()
+    def get_bookings(self, guest_id):
+        query = select(Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date).where(
+            Booking.guest_id == guest_id)
+        result = self._session.execute(query).fetchall()
         return result
 
     def get_filtered_rooms(self, number_of_guests):
