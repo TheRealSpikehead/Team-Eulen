@@ -13,12 +13,11 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 
 
-class ReservationManager(object):
-    def __init__(self, database_file):
-        database_path = Path(database_file)
-        if not database_path.is_file():
-            init_db(str(database_file), generate_example_data=True)
-        self._engine = create_engine(f'sqlite:///{database_file}')
+class ReservationManager:
+    def __init__(self, db_file):
+        if not db_file.is_file():
+            init_db(str(db_file), generate_example_data=True)
+        self._engine = create_engine(f'sqlite:///{db_file}')
         self._session = scoped_session(sessionmaker(bind=self._engine))
 
     def make_booking(self, room_id: int, guest_id: int, number_of_guests: int, start_date: datetime, end_date: datetime,
@@ -60,9 +59,9 @@ class ReservationManager(object):
         result = round(price + diff, 2)
         return result
 
-    def get_bookings(self, guest_id):
-        query = select(Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date).where(Booking.guest_id == guest_id)
-        result = self._session.execute(query).fetchall()
+    def get_bookings(self, registered_guest: RegisteredGuest):
+        query = select(Booking).where(Booking.guest == registered_guest)
+        result = self._session.execute(query).scalars().all()
         return result
 
     def get_filtered_rooms(self, number_of_guests):
@@ -97,29 +96,33 @@ def create_booking():
 
         booking = manager.make_booking(room_id, guest_id, number_of_guests, start_date, end_date, comment)
 
-        # Word-Dokument erstellen und Speicherort auswählen
-        file_path = filedialog.asksaveasfilename(defaultextension=".docx", filetypes=[("Word Documents", "*.docx")])
-        if file_path:
-            doc = Document()
-            doc.add_heading('Buchungsbestätigung', 0)
+        # Überprüfen, ob ein Word-Dokument erstellt werden soll
+        if create_doc_var.get() == 1:
+            # Word-Dokument erstellen und Speicherort auswählen
+            file_path = filedialog.asksaveasfilename(defaultextension=".docx", filetypes=[("Word Documents", "*.docx")])
+            if file_path:
+                doc = Document()
+                doc.add_heading('Buchungsbestätigung', 0)
 
-            doc.add_paragraph(f'Startdatum: {start_date.strftime("%d.%m.%Y")}')
-            doc.add_paragraph(f'Enddatum: {end_date.strftime("%d.%m.%Y")}')
-            doc.add_paragraph(f'Anzahl der Gäste: {number_of_guests}')
-            doc.add_paragraph(f'Kommentar: {comment}')
-            doc.add_paragraph(f'Raum ID: {room_id}')
-            doc.add_paragraph(f'Gast ID: {guest_id}')
+                doc.add_paragraph(f'Startdatum: {start_date.strftime("%d.%m.%Y")}')
+                doc.add_paragraph(f'Enddatum: {end_date.strftime("%d.%m.%Y")}')
+                doc.add_paragraph(f'Anzahl der Gäste: {number_of_guests}')
+                doc.add_paragraph(f'Kommentar: {comment}')
+                doc.add_paragraph(f'Raum ID: {room_id}')
+                doc.add_paragraph(f'Gast ID: {guest_id}')
 
-            doc.save(file_path)
-            messagebox.showinfo("Erfolg", f"Buchung erfolgreich erstellt! Dokument gespeichert als {file_path}")
+                doc.save(file_path)
+                messagebox.showinfo("Erfolg", f"Buchung erfolgreich erstellt! Dokument gespeichert als {file_path}")
+        else:
+            messagebox.showinfo("Erfolg", "Buchung erfolgreich erstellt!")
 
     except Exception as e:
         messagebox.showerror("Fehler", str(e))
 
 
 if __name__ == '__main__':
-    db_path = Path("data/database.db")
-    manager = ReservationManager(Path("data/database.db"))
+    db_path = Path("../data/database.db")
+    manager = ReservationManager(db_path)
 
     root = tk.Tk()
     root.title("Reservation Manager")
@@ -158,6 +161,11 @@ if __name__ == '__main__':
     guest_var.set(next(iter(guest_choices)))  # Setze die Standardauswahl auf den ersten Gast
     guest_menu = tk.OptionMenu(root, guest_var, *guest_choices.keys())
     guest_menu.pack(pady=5)
+
+    # Checkbox für Word-Dokument-Erstellung
+    create_doc_var = tk.IntVar()
+    create_doc_check = tk.Checkbutton(root, text="Word-Dokument erstellen", variable=create_doc_var)
+    create_doc_check.pack(pady=5)
 
     # Buchungs-Button
     button = tk.Button(root, text="Buchung erstellen", command=create_booking)
