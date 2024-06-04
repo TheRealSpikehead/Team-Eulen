@@ -30,7 +30,7 @@ user_manager = UserManager(database_file)
 class BookingHistory(Menu):
     def __init__(self, back, login):
         super().__init__("Hotelreservationsystem - Booking Overview")
-        guest_id = user_manager.get_registered_guest(login)
+        guest_id = user_manager.get_RegisteredGuest(login)
         self.booking_history = reservation_manager.get_bookings(guest_id)
         for booking in self.booking_history:
             self.add_option(MenuOption(f"Room number: {booking[0]} / Number of guests: {booking[1]} / Start Date: {booking[2]} / End Date: {booking[3]}"))
@@ -153,16 +153,17 @@ class HotelsFilter2(Menu):
 
 
 class HotelsFilter1(Menu):
-    def __init__(self, back):
+    def __init__(self, back, login):
         super().__init__("Hotelreservationsystem - Filter Hotel")
         self.add_option(MenuOption("Filter Hotels"))
         self.add_option(MenuOption("Quit"))
+        self._login = login
         self._back = back
 
     def _navigate(self, choice: int, available_hotels=None):
         match choice:
             case 1:
-                return AvailableRooms(self, start_date=input("Start Date (YYYY-MM-DD): "), end_date=input("End Date (YYYY-MM-DD): "), city=input("City: "), stars=input("Number of stars: "), max_guests=input("Number of Guests: "))
+                return AvailableRooms(self, start_date=input("Start Date (YYYY-MM-DD): "), end_date=input("End Date (YYYY-MM-DD): "), city=input("City: "), stars=input("Number of stars: "), max_guests=input("Number of Guests: "), login=self._login)
             case 2:
                 return self._back
 
@@ -200,38 +201,60 @@ class ReservationConfirmation(Menu):
                 return self._back
 
 class Current_Room(Menu):
-    def __init__(self, back, myroomid, mymaxguests, mystartdate, myenddate):
+    def __init__(self, back, myroomid, mymaxguests:int, mystartdate, myenddate, login):
         super().__init__("Hotelreservierungssystem - Room")
         self.add_option(MenuOption("View Room Details"))
-        self.add_option(MenuOption("Make a Reservation"))
-        print(myroomid)
+        self._Isguest = user_manager.get_current_login()
+        if self._Isguest is None:
+            self.add_option(MenuOption("I already did a reservation before"))
+            self.add_option(MenuOption("I never did a reservation before"))
+        else:
+            self.add_option(MenuOption("Make a Reservation"))
+            self._rguest = user_manager.get_RegisteredGuest(login)
         self._myroomid = myroomid
         self._mystartdate = mystartdate
         self._myenddate = myenddate
-        self._mymaxguests = mymaxguests
+        self._mymaxguests:int = mymaxguests
         self.add_option(MenuOption("Quit"))
         self._back = back
+
 
     def _navigate(self, choice: int):
         match choice:
             case 1:
                 return RoomDetails(self, self._myroomid)
             case 2:
-                mybooking = reservation_manager.make_booking(room_id=self._myroomid, Hotel_name=self._myhotel, start_date=self._mystartdate, end_date=self._myenddate, number_of_guests=self._mymaxguests, comment=input("Enter a comment here: "))
-                return ReservationConfirmation(self, mybooking)
+                if self._Isguest is None:
+                    firstname = input("Enter firstname: ")
+                    lastname = input("Enter lastname: ")
+                    guest_id = user_manager.get_Guest(firstname, lastname)
+                    mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=guest_id, start_date=self._mystartdate, end_date=self._myenddate, number_of_guests=self._mymaxguests, comment=input("Enter a comment here: "))
+                    return ReservationConfirmation(self, mybooking)
+                else:
+                    mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=self._rguest, number_of_guests=self._mymaxguests, start_date=self._mystartdate, end_date=self._myenddate, comment=input("Enter a comment here: "))
+                    return ReservationConfirmation(self, mybooking)
             case 3:
+                if self._Isguest is None:
+                    print("Please give us your Personal Information so you can proceed with the Reservation")
+                    new_guest = user_manager.create_guest(first_name=input("Enter firstname: "), last_name=input("Enter lastname: "), email=input("Enter email: "), street=input("Enter street: "), zip=input("Enter zip: "), city=input("Enter city: "))
+                    self._guest_id = new_guest[1]
+                    mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=self._guest_id, start_date=self._mystartdate, end_date=self._myenddate, number_of_guests=self._mymaxguests, comment=input("Enter a comment here: "))
+                    return ReservationConfirmation(self, mybooking)
+                else:
+                    return self._back
+            case 4:
                 return self._back
 
 class AvailableRooms(Menu):
-    def __init__(self, back, city, start_date, end_date, max_guests, stars):
+    def __init__(self, back, city, start_date, end_date, max_guests, stars, login):
         super().__init__("Hotelreservationsystem - Available Rooms")
         self.available_rooms = search_manager.get_available_hotels_and_rooms(city, stars, max_guests, start_date, end_date)
         for rooms in self.available_rooms:
-            self.add_option(MenuOption(f"{rooms[4]}"))
-            #self.add_option(MenuOption(f"Hotel: {rooms[0]}, Room number: {rooms[1]}, Type: {rooms[2]}, Price: {rooms[3]}, Room ID: {rooms[4]}"))
+            self.add_option(MenuOption(f"Hotel: {rooms[0]}, Room number: {rooms[1]}, Type: {rooms[2]}, Price: {rooms[3]}, Room ID: {rooms[4]}"))
         self._mystartdate = start_date
         self._myenddate = end_date
         self._mymaxguests = max_guests
+        self._login = login
         self.add_option(MenuOption("Quit"))
         self._back = back
 
@@ -241,8 +264,9 @@ class AvailableRooms(Menu):
             return self._back
         elif 1 <= choice <= len(self.available_rooms):
             # Der Benutzer hat ein Hotel ausgewählt
-            myroomid = self.available_rooms[choice - 1] #Wie kann ich auf Room[4] zugreiffen
-            return Current_Room(self, myroomid, self._mymaxguests, self._mystartdate, self._myenddate)
+            selected_room = self.available_rooms[choice - 1] #Wie kann ich auf Room[4] zugreiffen
+            myroomid = selected_room[-1]
+            return Current_Room(self, myroomid, self._mymaxguests, self._mystartdate, self._myenddate, self._login)
         else:
             print("Ungültige Auswahl.")
             return None
@@ -323,7 +347,6 @@ class HomeScreen(Menu):
         self.add_option(MenuOption("View all Hotels"))
         self._All_Hotels = AllHotels(self)
         self.add_option(MenuOption("Filter Hotels"))
-        self._Filter_Hotels1 = HotelsFilter1(self)
         self._login = login
         if login is not None:
             self._isadmin = user_manager.is_admin(login)
@@ -347,7 +370,7 @@ class HomeScreen(Menu):
             case 1:
                 return self._All_Hotels
             case 2:
-                return self._Filter_Hotels1
+                return HotelsFilter1(self, self._login)
             case 3:
                 if self._login is None:
                     return self._back

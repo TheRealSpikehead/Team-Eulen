@@ -57,8 +57,8 @@ class UserManager:
 
 #Registrieren
 
-    def create_guest(self, first_name, last_name, email, street, zip, city, bookings):
-        query = select(Role).where(Role.name == "Guest")
+    def create_guest(self, first_name, last_name, email, street, zip, city):
+        query = select(Role, Guest.id).where(Role.name == "Guest")
         role = self._session.execute(query).scalars().one()
         new_guest = Guest(
             first_name=first_name,
@@ -66,13 +66,13 @@ class UserManager:
             email=email,
             street=street,
             zip=zip,
-            city=city,
-            bookings=bookings,
+            city=city
         )
         self._session.add(new_guest)
         self._session.commit()
+        return role
 
-    def create_RegisteredGuest(self, firstname, lastname, email, street, zip, city, username, password, bookings):
+    def create_RegisteredGuest(self, firstname, lastname, email, street, zip, city, username, password):
         query = select(Role).where(Role.name == "RegisteredGuest")
         role = self._session.execute(query).scalars().one()
         new_RegisteredGuest = RegisteredGuest(
@@ -96,8 +96,8 @@ class UserManager:
         self._session.add(new_admin)
         self._session.commit()
 
-    def get_Guest(self, login):
-        query = select(Guest).where(Guest.login == login)
+    def get_Guest(self, firstname, lastname):
+        query = select(Guest.id).where(Guest.firstname == firstname, Guest.lastname == lastname)
         result = self._session.execute(query).scalars().one_or_none()
         return result
 
