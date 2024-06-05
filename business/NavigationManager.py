@@ -87,8 +87,9 @@ class UpdateHotel(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Update Hotel")
         self.update_hotel = inventory_manager.update_hotel()
-        update_hotel = self.update_hotel.name
-        self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{update_hotel}"))
+        print(self.update_hotel)
+        #update_hotel = self.update_hotel.name
+        self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{self.update_hotel}"))
         self.add_option(MenuOption("Quit"))
         self._back = back
 
