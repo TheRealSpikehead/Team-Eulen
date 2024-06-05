@@ -87,8 +87,8 @@ class UpdateHotel(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Update Hotel")
         self.update_hotel = inventory_manager.update_hotel()
-        for hotel in self.update_hotel:
-            self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{hotel[0]}"))
+        update_hotel = self.update_hotel.name
+        self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{update_hotel}"))
         self.add_option(MenuOption("Quit"))
         self._back = back
 
@@ -101,8 +101,8 @@ class DeleteHotel(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Hotel Deletion")
         self.delete_hotel = inventory_manager.remove_hotel()
-        for hotel in self.delete_hotel:
-            self.add_option(MenuOption(f"Congratulation! You removed the following hotel:{hotel[0]}"))
+        delete_hotel = self.delete_hotel.name
+        self.add_option(MenuOption(f"Congratulation! You removed the following hotel:{delete_hotel}"))
         self.add_option(MenuOption("Quit"))
         self._back = back
 
@@ -115,8 +115,8 @@ class AddHotel(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Available Hotel")
         self.add_hotel = inventory_manager.add_hotel_and_address()
-        for hotel in self.add_hotel:
-            self.add_option(MenuOption(f"Congratulation! You created a new hotel:{hotel[0]}"))
+        new_hotel = self.add_hotel.name
+        self.add_option(MenuOption(f"Congratulation! You created a new hotel: {new_hotel}"))
         self.add_option(MenuOption("Quit"))
         self._back = back
 

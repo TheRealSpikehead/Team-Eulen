@@ -39,6 +39,7 @@ class InventoryManager(object):
         session.commit()
 
         print("Hotel and Address was successfully added")
+        return new_hotel
 
     def close1(self) -> None:
         self.__Session.remove()
@@ -60,8 +61,8 @@ class InventoryManager(object):
                 if address:
                     session.delete(address)
                     session.commit()
-
-                print(f"Hotel {hotel_name} was successfully removed.")
+                return hotel
+                #print(f"Hotel {hotel_name} was successfully removed.")
             else:
                 print(f"Hotel {hotel_name} was not found")
         except Exception as e:
@@ -69,6 +70,7 @@ class InventoryManager(object):
             session.rollback()
         finally:
             session.close()
+
 
     def close2(self) -> None:
         self.__Session.remove()
@@ -82,11 +84,11 @@ class InventoryManager(object):
             hotel = session.query(Hotel).filter(Hotel.name == hotel_name).first()
 
             if hotel:
-                new_name = input("New name of the hotel (leave blank if no change): ")
-                new_stars = input("New star rating  (leave blank if no change): ")
-                new_street = input("New street (leave blank if no change): ")
-                new_zip = input("New zip (leave blank if no change): ")
-                new_city = input("New city (leave blank if no change): ")
+                new_name = input("New name of the hotel (leave blank if no change): ") or None
+                new_stars = input("New star rating  (leave blank if no change): ") or None
+                new_street = input("New street (leave blank if no change): ") or None
+                new_zip = input("New zip (leave blank if no change): ") or None
+                new_city = input("New city (leave blank if no change): ") or None
 
                 if new_name:
                     hotel.name = new_name
@@ -99,9 +101,9 @@ class InventoryManager(object):
                     hotel.address.zip = new_zip
                 if new_city:
                     hotel.address.city = new_city
-
                 session.commit()
-                print(f"Hotel '{hotel_name}' was successfully updated!.")
+                return hotel
+                #print(f"Hotel '{hotel_name}' was successfully updated!.")
             else:
                 print(f"No Hotel {hotel_name} was found")
 
