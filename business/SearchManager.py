@@ -1,5 +1,5 @@
 from pathlib import Path
-import sm
+
 from sqlalchemy import create_engine, select, join, func, and_, or_
 from sqlalchemy.orm import sessionmaker, scoped_session, aliased
 from data_access.data_base import init_db
@@ -124,7 +124,7 @@ class SearchManager(object):
         end_date = input("Enter end date (YYYY-MM-DD, leave blank if not specific): ") or None
         return city, stars, max_guests, start_date, end_date
 
-    def get_available_hotels_and_rooms(self, city: str, stars: int, max_guests: int, start_date: date, end_date: date):
+    def get_available_hotels_and_rooms(self, city: str, stars: int, max_guests: int, start_date: str, end_date: str):
 
         if start_date:
             start_date = datetime.strptime(start_date, '%Y-%m-%d')
@@ -161,10 +161,17 @@ class SearchManager(object):
             query = query.where(and_(*conditions))
 
         available_rooms = self.__session.execute(query).fetchall()
+
+        if not available_rooms:
+            print("No available hotels found.")
+
+
         return available_rooms
 
-        #if not available_rooms:
-            #print("No available rooms found.")
+
+
+
+
         #else:
             #print("Available rooms:")
             #for room in available_rooms:
@@ -173,12 +180,12 @@ class SearchManager(object):
 
 if __name__ == "__main__":
     sm = SearchManager('../data/database.db')
-    #city, stars, max_guests, start_date, end_date = sm.get_userinput()
-    #sm.get_available_hotels_and_rooms(city, stars, max_guests, start_date, end_date)
-    # sm.get_available_hotels()
+    # city, stars, max_guests, start_date, end_date = sm.get_userinput()
+    # sm.get_available_hotels_and_rooms(city, stars, max_guests, start_date, end_date)
+    sm.get_available_hotels()
     # sm.get_room_details()
     # sm.get_hotel_information()
-    #sm.get_all_hotels()
+    # sm.get_all_hotels()
 
 
 
