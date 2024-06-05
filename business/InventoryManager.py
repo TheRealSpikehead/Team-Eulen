@@ -83,7 +83,7 @@ class InventoryManager(object):
             hotel_name = input("Enter the name of the hotel to be updated: ")
             hotel = session.query(Hotel).filter(Hotel.name == hotel_name).first()
 
-            if Hotel.name == hotel_name:
+            if hotel is not None:
 
                 if hotel:
                     new_name = input("New name of the hotel (leave blank if no change): ") or None
@@ -106,7 +106,7 @@ class InventoryManager(object):
                 return hotel_name
                 #print(f"Hotel '{hotel_name}' was successfully updated!.")
             else:
-                return print(f"No Hotel {hotel_name} was found")
+                return None #print(f"No Hotel {hotel_name} was found")
 
         except Exception as e:
             session.rollback()

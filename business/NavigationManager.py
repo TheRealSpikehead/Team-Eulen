@@ -87,14 +87,17 @@ class UpdateHotel(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Update Hotel")
         self.update_hotel = inventory_manager.update_hotel()
-        print(self.update_hotel)
-        #update_hotel = self.update_hotel.name
-        self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{self.update_hotel}"))
+        if self.update_hotel is None:
+            self.add_option(MenuOption("This Hotel is not available. Please try again"))
+        else:
+            self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{self.update_hotel}"))
         self.add_option(MenuOption("Quit"))
         self._back = back
 
     def _navigate(self, choice: int):
         match choice:
+            case 1:
+                return self._back
             case 2:
                 return self._back
 
