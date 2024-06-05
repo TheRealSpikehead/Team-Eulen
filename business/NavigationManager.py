@@ -251,8 +251,11 @@ class AvailableRooms(Menu):
     def __init__(self, back, stars, city, start_date, end_date, max_guests, login):
         super().__init__("Hotelreservationsystem - Available Rooms")
         self.available_rooms = search_manager.get_available_hotels_and_rooms(city, stars, max_guests, start_date, end_date)
-        for rooms in self.available_rooms:
-            self.add_option(MenuOption(f"Hotel: {rooms[0]}, Room number: {rooms[1]}, Type: {rooms[2]}, Price: {rooms[3]}, Room ID: {rooms[4]}"))
+        if not self.available_rooms:
+            self.add_option(MenuOption("No available rooms"))
+        else:
+            for rooms in self.available_rooms:
+                self.add_option(MenuOption(f"Hotel: {rooms[0]}, Room number: {rooms[1]}, Type: {rooms[2]}, Price: {rooms[3]}, Room ID: {rooms[4]}"))
         self._mystartdate = start_date
         self._myenddate = end_date
         self._mymaxguests = max_guests
@@ -263,6 +266,8 @@ class AvailableRooms(Menu):
     def _navigate(self, choice: int):
         if choice == len(self.available_rooms) + 1:
             # Benutzer hat "Back" ausgewählt
+            return self._back
+        elif not self.available_rooms:
             return self._back
         elif 1 <= choice <= len(self.available_rooms):
             # Der Benutzer hat ein Hotel ausgewählt
