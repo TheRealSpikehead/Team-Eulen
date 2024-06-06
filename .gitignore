@@ -1,1 +1,3 @@
 /.venv/
+/data/database.db
+/business/data/database.db

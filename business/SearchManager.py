@@ -126,10 +126,10 @@ class SearchManager(object):
 
     def get_available_hotels_and_rooms(self, city: str, stars: int, max_guests: int, start_date: str, end_date: str):
 
-        if start_date:
-            start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        if end_date:
-            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        #if start_date:
+        #    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        #if end_date:
+        #    end_date = datetime.strptime(end_date, '%Y-%m-%d')
 
         query = select(Hotel.name, Room.number, Room.description, Room.price, Room.id). \
             join(Address). \
