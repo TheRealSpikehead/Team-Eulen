@@ -27,6 +27,42 @@ user_manager = UserManager(database_file)
 #Dies wird durch die Verwendung von der If else funktion erreicht. Aufpassen bei match choices. Dort weiss ich noch nicht wie ich das Lösen kann.
 #Dazu muss aber zuerst der UserManager stehen.
 
+
+class RegistrationConfirmation(Menu):
+    def __init__(self, back):
+        super().__init__("Hotelreservationsystem - Registeration Confirmation")
+        self.add_option(MenuOption("Congratulation! Your new Account was successfully registered!"))
+        self.add_option(MenuOption("Back to Login"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                return HotelMenu(self)
+
+class RegisterNewUser(Menu):
+    def __init__(self, back):
+        super().__init__("Hotelreservationsystem - Register New User")
+        self.add_option(MenuOption("Register new account"))
+        self.add_option(MenuOption("Back"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 1:
+                firstname = input("First Name: ")
+                lastname = input("Last Name: ")
+                email = input("Email: ")
+                street = input("Street Address: ")
+                zip = input("Zip: ")
+                city = input("City: ")
+                username = input("Username: ")
+                password = input("Password: ")
+                user_manager.create_RegisteredGuest(firstname=firstname, lastname=lastname, email=email, street=street, zip=zip, city=city, username=username, password=password)
+                return RegistrationConfirmation(self)
+            case 2:
+                return self._back
+
 class BookingHistory(Menu):
     def __init__(self, back, login):
         super().__init__("Hotelreservationsystem - Booking Overview")
@@ -263,8 +299,13 @@ class Current_Room(Menu):
                     lastname = input("Enter your last name: ")
                     user_manager.create_guest(first_name=firstname, last_name=lastname, email=input("Enter email: "), street=input("Enter street: "), zip=input("Enter zip: "), city=input("Enter city: "))
                     guest_id = user_manager.get_Guest(firstname, lastname)
-                    mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=guest_id, start_date=self._mystartdate, end_date=self._myenddate, number_of_guests=self._mymaxguests, comment=input("Enter a comment here: "))
-                    return ReservationConfirmation(self, mybooking, self._mylogin)
+                    print("Your Guest Account was created. Do you want to proceed with the booking? y/n")
+                    answer = input()
+                    if answer == "y" or answer == "Y":
+                        mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=guest_id, start_date=self._mystartdate, end_date=self._myenddate, number_of_guests=self._mymaxguests, comment=input("Enter a comment here: "))
+                        return ReservationConfirmation(self, mybooking, self._mylogin)
+                    else:
+                        return self._back
                 else:
                     return self._back
             case 4:
@@ -278,7 +319,7 @@ class AvailableRooms(Menu):
             self.add_option(MenuOption("No available rooms"))
         else:
             for rooms in self.available_rooms:
-                self.add_option(MenuOption(f"Hotel: {rooms[0]}, Room number: {rooms[1]}, Type: {rooms[2]}, Price: {rooms[3]}, Room ID: {rooms[4]}"))
+                self.add_option(MenuOption(f"Room number: {rooms[1]}, Type: {rooms[2]}, Price: {rooms[3]}"))
         self._mystartdate = start_date
         self._myenddate = end_date
         self._mymaxguests = max_guests
@@ -451,16 +492,43 @@ class HotelMenu(Menu):
                 login = None
                 return HomeScreen(self, login)
             case 2:
-                user_manager.has_attempts_left()
-                login = user_manager.login(username=input("Username: "), password=input("Password: "))
+                while user_manager.has_attempts_left():
+                    in_username = input("Enter username: ")
+                    in_password = input("Enter password: ")
+                    login = user_manager.login(in_username, in_password)
+                    if login is not None:
+                        print("Login Successful")
+                        break
+                    else:
+                        print("Username or Password wrong!")
+                if user_manager.get_current_login() is not None:
+                    if user_manager.is_admin(user_manager.get_current_login()):
+                        print()
+                        print()
+                        print(f"Welcome {user_manager.get_current_login().username}")
+                        print("Admin rights granted")
+                        print()
+                        print()
+                    else:
+                        reg_user = user_manager.get_RegisteredGuest(user_manager.get_current_login())
+                        print()
+                        print()
+                        print(
+                            f"Welcome {user_manager.get_current_login().username} ")
+                        print()
+                        print()
+                        #user_manager.logout()
+                        #print(user_manager.get_current_login())  # ?
+                else:
+                    print("Too many attempts, close program")
+                    return None
+                #user_manager.has_attempts_left()
+                #login = user_manager.login(username=input("Username: "), password=input("Password: "))
                 return HomeScreen(self, login)
             case 3:
-                self.clear()
-                print("Add Hotel")
-                input("Press Enter to continue...")
-                return self
+                return RegisterNewUser(self)
             case 4:
-                return self._back
+                return MainMenu()
 
 class MainMenu(Menu):
     def __init__(self):
