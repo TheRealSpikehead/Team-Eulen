@@ -339,7 +339,26 @@ class Current_Hotel(Menu):
             case 1:
                 return self._HotelDetails
             case 2:
-                return AvailableRooms(self, stars=self._mystars, city=self._mycity, start_date=input("Start Date (YYYY-MM-DD): "), end_date=input("End Date (YYYY-MM-DD): "), max_guests=input("Number of Guests: "), login=self._login)
+                valid_date = False
+                while not valid_date:
+                    try:
+                        start_date_input = input("Enter start date (YYYY-MM-DD): ")
+                        end_date_input = input("Enter end date (YYYY-MM-DD): ")
+                        self._startdate = datetime.strptime(start_date_input, "%Y-%m-%d").date()
+                        self._enddate = datetime.strptime(end_date_input, "%Y-%m-%d").date()
+                        valid_date = True
+                    except ValueError:
+                        print("Please enter a valid date in the format YYYY-MM-DD")
+
+                valid = False
+                while not valid:
+                    try:
+                        number_of_guests = input("Number of Guests: ")
+                        self._number_of_guests = int(number_of_guests)
+                        valid = True
+                    except ValueError:
+                        print("Please give a number")
+                return AvailableRooms(self, stars=self._mystars, city=self._mycity, start_date=self._startdate, end_date=self._enddate, max_guests=self._number_of_guests, login=self._login)
             case 3:
                 return self._back
 
