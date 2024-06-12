@@ -71,6 +71,21 @@ class ReservationManager(object):
         query = select(Room).where(Room.max_guests >= number_of_guests)
         return self._session.execute(query).scalars().all()
 
+    def create_document(self, file_path, start_date, end_date, number_of_guests, comment, room_id, guest_id, price):
+
+            doc = Document()
+            doc.add_heading('Buchungsbestätigung', 1)
+
+            doc.add_paragraph(f'Startdatum: {start_date}')
+            doc.add_paragraph(f'Enddatum: {end_date}')
+            doc.add_paragraph(f'Anzahl der Gäste: {number_of_guests}')
+            doc.add_paragraph(f'Kommentar: {comment}')
+            doc.add_paragraph(f'Raum ID: {room_id}')
+            doc.add_paragraph(f'Gast ID: {guest_id}')
+            doc.add_paragraph(f'Preis (ohne MwSt.): {price} CHF')
+
+            doc.save(file_path)
+
 
 def update_room_menu():
     try:
@@ -131,6 +146,7 @@ def create_booking():
 
     except Exception as e:
         messagebox.showerror("Fehler", str(e))
+
 
 
 

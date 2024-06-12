@@ -9,6 +9,9 @@ from ReservationManager import ReservationManager
 from UserManager import UserManager
 from datetime import datetime
 
+import os
+from tkinter import Tk, filedialog
+
 # Annahme: Der Dateipfad zur Datenbankdatei wird als Argument übergeben
 database_file = "../data/database.db"
 
@@ -291,30 +294,6 @@ class AddHotel(Menu):
 
 
 # ---------------------------------------------------------------------------Guest
-class HotelsFilter2(Menu):
-    def __init__(self, back, start_date, end_date, city, max_guests):
-        super().__init__("Hotelreservationsystem - Available Hotel")
-        # self.start_date = start_date
-        # self.end_date = end_date
-        # self.city = city
-        # self.max_guests = max_guests
-        self.available_rooms = search_manager.get_available_hotels(city, start_date, end_date, max_guests)
-        for room in self.available_rooms:
-            self.add_option(MenuOption(room[0]))
-        self.add_option(MenuOption("Quit"))
-        self._back = back
-
-    def _navigate(self, choice: int):
-        if choice == len(self.available_rooms) + 1:
-            # Benutzer hat "Back" ausgewählt
-            return self._back
-        elif 1 <= choice <= len(self.available_rooms):
-            # Der Benutzer hat ein Hotel ausgewählt
-            myroom = self.available_rooms[choice - 1][0]
-            return Current_Room(self, myroom, self._myhotel, self._mymaxguests, self._mystartdate, self._myenddate)
-        else:
-            print("Ungültige Auswahl.")
-            return None
 
 
 class HotelsFilter1(Menu):
@@ -374,18 +353,51 @@ class RoomDetails(Menu):
                 return self._back
 
 
-class ReservationConfirmation(Menu):
-    def __init__(self, back, mybooking, login):
-        super().__init__("Hotelreservationsystem - Reservation Confirmation")
-        Totalprice = reservation_manager.get_price(mybooking)
-        self.add_option(MenuOption(f"Congratulation! Your reservation was processed. Total costs are: {Totalprice}"))
-        self.add_option(MenuOption("Quit"))
+class DocumentCreation(Menu):
+    def __init__(self, back, login):
+        super().__init__("Hotelreservationssystem - Document Creation")
+        self.add_option(MenuOption(f"Congratulation! The Document of your Booking was succesfully created"))
+        self.add_option(MenuOption("Back to HomeScreen"))
         self._mylogin = login
         self._back = back
 
-    def _navigate(self, choice: int, available_hotels=None):
+    def _navigate(self, choice: int):
         match choice:
             case 2:
+                return HomeScreen(self, self._mylogin)
+
+
+
+class ReservationConfirmation(Menu):
+    def __init__(self, back, mybooking, login, start_date, end_date, number_of_guests, comment, room_id, guest_id):
+        super().__init__("Hotelreservationsystem - Reservation Confirmation")
+        self._totalprice = reservation_manager.get_price(mybooking)
+        self.add_option(MenuOption(f"Congratulation! Your reservation was processed. Total costs are: {self._totalprice}"))
+        self._start_date = start_date
+        self._end_date = end_date
+        self._number_of_guests = number_of_guests
+        self._comment = comment
+        self._room_id = room_id
+        self._guest_id = guest_id
+        self.add_option(MenuOption("Create a Document for my Booking"))
+        self.add_option(MenuOption("Back to HomeScreen"))
+        self._mylogin = login
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                root = Tk()
+                root.withdraw()
+
+                directory = filedialog.askdirectory(title="Wählen Sie ein Verzeichnis zum Speichern des Dokuments")
+
+                if directory:
+                    # Vollständiger Pfad zur Datei
+                    file_path = os.path.join(directory, "Buchungsbestätigung.docx")
+                reservation_manager.create_document(file_path=file_path, start_date=self._start_date, end_date=self._end_date, number_of_guests=self._number_of_guests, comment=self._comment, room_id=self._room_id, guest_id=self._guest_id, price=self._totalprice)
+                return DocumentCreation(self, self._mylogin)
+            case 3:
                 return HomeScreen(self, self._mylogin)
 
 
@@ -417,17 +429,19 @@ class Current_Room(Menu):
                     firstname = input("Enter firstname: ")
                     lastname = input("Enter lastname: ")
                     guest_id = user_manager.get_Guest(firstname, lastname)
+                    comment = input("Enter a comment here: ")
                     mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=guest_id,
                                                                  start_date=self._mystartdate, end_date=self._myenddate,
                                                                  number_of_guests=self._mymaxguests,
-                                                                 comment=input("Enter a comment here: "))
-                    return ReservationConfirmation(self, mybooking, self._mylogin)
+                                                                 comment=comment)
+                    return ReservationConfirmation(self, mybooking, self._mylogin, self._mystartdate, self._myenddate, self._mymaxguests, comment, self._myroomid, guest_id)
                 else:
+                    comment = input("Enter a comment here: ")
                     mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=self._rguest,
                                                                  number_of_guests=self._mymaxguests,
                                                                  start_date=self._mystartdate, end_date=self._myenddate,
-                                                                 comment=input("Enter a comment here: "))
-                    return ReservationConfirmation(self, mybooking, self._mylogin)
+                                                                 comment=comment)
+                    return ReservationConfirmation(self, mybooking, self._mylogin, self._mystartdate, self._myenddate, self._mymaxguests, comment, self._myroomid, self._rguest)
             case 3:
                 if self._Isguest is None:
                     print("Please give us your Personal Information so you can proceed with the Reservation")
@@ -440,12 +454,13 @@ class Current_Room(Menu):
                     print("Your Guest Account was created. Do you want to proceed with the booking? y/n")
                     answer = input()
                     if answer == "y" or answer == "Y":
+                        comment = input("Enter a comment here: ")
                         mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=guest_id,
                                                                      start_date=self._mystartdate,
                                                                      end_date=self._myenddate,
                                                                      number_of_guests=self._mymaxguests,
-                                                                     comment=input("Enter a comment here: "))
-                        return ReservationConfirmation(self, mybooking, self._mylogin)
+                                                                     comment=comment)
+                        return ReservationConfirmation(self, mybooking, self._mylogin, self._mystartdate, self._myenddate, self._mymaxguests, comment, self._myroomid, guest_id)
                     else:
                         return self._back
                 else:
