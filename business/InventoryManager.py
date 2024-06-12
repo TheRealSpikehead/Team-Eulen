@@ -266,6 +266,12 @@ class InventoryManager(object):
             session.close()
 
 
+    def delete_booking(self, bookingid):
+        session = self.__Session()
+        bookings = session.query(Booking).filter(Booking.id == bookingid).first()
+        session.delete(bookings)
+        session.commit()
+
 
 
 

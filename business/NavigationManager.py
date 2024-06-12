@@ -66,6 +66,35 @@ class RegisterNewUser(Menu):
             case 2:
                 return self._back
 
+class BookingDeletionConfirmation(Menu):
+    def __init__(self, back, login):
+        super().__init__("Hotelreservationsystem - Registeration Confirmation")
+        self.add_option(MenuOption("Congratulation! Your Booking was deleted!"))
+        self.add_option(MenuOption("Back to HomeScreen"))
+        self._login = login
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                return HomeScreen(self, self._login)
+
+class BookingChanges(Menu):
+    def __init__(self, back, mybooking, login):
+        super().__init__("Hotelreservationsystem - Change Booking")
+        self._mybooking = mybooking
+        self._login = login
+        self.add_option(MenuOption("Delete Booking"))
+        self.add_option(MenuOption("Back"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 1:
+                inventory_manager.delete_booking(self._mybooking)
+                return BookingDeletionConfirmation(self, self._login)
+            case 2:
+                return self._back
 
 class BookingHistory(Menu):
     def __init__(self, back, login):
@@ -76,6 +105,7 @@ class BookingHistory(Menu):
             self.add_option(MenuOption(
                 f"Room number: {booking[0]} / Number of guests: {booking[1]} / Start Date: {booking[2]} / End Date: {booking[3]}"))
         self.add_option(MenuOption("Back"))
+        self._login = login
         self._back = back
 
     def _navigate(self, choice: int):
@@ -83,7 +113,8 @@ class BookingHistory(Menu):
             # Benutzer hat "Back" ausgewählt
             return self._back
         elif 1 <= choice <= len(self.booking_history):
-            return None
+            mybooking = self.booking_history[choice - 1][4]
+            return BookingChanges(self, mybooking, self._login)
         else:
             print("Ungültige Auswahl.")
             return None
@@ -333,6 +364,7 @@ class RoomDetails(Menu):
             self.add_option(MenuOption(f"Number of Guests: {detail[2]}"))
             self.add_option(MenuOption(f"Amenities: {detail[3]}"))
             self.add_option(MenuOption(f"Description: {detail[4]}"))
+            self.add_option(MenuOption(f"Price: {detail[5]}"))
         self.add_option(MenuOption("Quit"))
         self._back = back
 

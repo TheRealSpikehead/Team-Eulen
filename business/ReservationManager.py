@@ -62,7 +62,7 @@ class ReservationManager(object):
         return result
 
     def get_bookings(self, guest_id):
-        query = select(Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date).where(
+        query = select(Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date, Booking.id).where(
             Booking.guest_id == guest_id)
         result = self._session.execute(query).fetchall()
         return result

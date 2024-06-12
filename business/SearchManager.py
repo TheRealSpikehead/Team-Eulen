@@ -56,7 +56,7 @@ class SearchManager(object):
     # ------------------------------get room details--------------------------------------------------------------------
     def get_room_details(self, room_id):
         j = join(Hotel, Room, Hotel.id == Room.hotel_id)
-        query = select(Room.number, Room.type, Room.max_guests, Room.amenities, Room.description).select_from(j)
+        query = select(Room.number, Room.type, Room.max_guests, Room.amenities, Room.description, Room.price).select_from(j)
         if room_id:
             query = query.where(Room.id == room_id)
         room_details = self.__session.execute(query)
