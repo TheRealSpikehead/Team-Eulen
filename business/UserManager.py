@@ -95,11 +95,10 @@ class UserManager:
 
 
     def create_admin(self, username, password):
-        query = select(Role).where(Role.name == "admin")
+        query = select(Role).where(Role.name == "administrator")
         role = self._session.execute(query).scalars().one()
-        new_admin = admin(
-            Username=username,
-            password=password,
+        new_admin = Login(
+            username=username, password=password, role=role
         )
         self._session.add(new_admin)
         self._session.commit()

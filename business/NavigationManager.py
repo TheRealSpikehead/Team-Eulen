@@ -22,16 +22,6 @@ reservation_manager = ReservationManager(database_file)
 user_manager = UserManager(database_file)
 
 
-# Rufe die Methode get_all_hotels auf der Instanz auf
-
-
-# Der Plan für die Implementation eines Admin Users ist nicht alle Klassen neu zu machen sondern die bestehende Klassen zu erweitern.
-# Dazu wird eine Variable weitergegeben die sagt ob sich ein Admin oder User in der Konsole befindet.
-# Je nach dem werden gewisse Optionen sichtbar welche für einen Guest User nicht sichtbar sind.
-# Dies wird durch die Verwendung von der If else funktion erreicht. Aufpassen bei match choices. Dort weiss ich noch nicht wie ich das Lösen kann.
-# Dazu muss aber zuerst der UserManager stehen.
-
-
 class RegistrationConfirmation(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Registeration Confirmation")
@@ -124,27 +114,37 @@ class BookingHistory(Menu):
 
 
 # ----------------------------------------------------------------------------------Admin
-# class AllRooms(Menu):
-#    def __init__(self, back, myhotel):
-#        super().__init__("Hotelreservationsystem - All Rooms")
-#        Hotel_name = myhotel
-#        self.all_rooms = search_manager.get_all_rooms(Hotel_name)
-#        for allrooms in self.all_rooms:
-#            self.add_option(MenuOption(allrooms))
-#        self.add_option(MenuOption("Quit"))
-#        self._back = back
-#
-#    def _navigate(self, choice: int):
-#        if choice == len(self.all_rooms) + 1:
-#            # Benutzer hat "Back" ausgewählt
-#            return self._back
-#        elif 1 <= choice <= len(self.all_rooms):
-# Der Benutzer hat ein Hotel ausgewählt
-#            myroom = self.all_rooms[choice - 1]
-#            return Current_Room(self, myroom)
-#        else:
-#            print("Ungültige Auswahl.")
-#            return None
+
+class AdminRegistrationConfirmation(Menu):
+    def __init__(self, back):
+        super().__init__("Hotelreservationsystem - Registeration Confirmation")
+        self.add_option(MenuOption("Congratulation! Your new Admin Account was successfully registered!"))
+        self.add_option(MenuOption("Back to Login"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 2:
+                return HotelMenu(self)
+
+
+class RegisterNewAdmin(Menu):
+    def __init__(self, back):
+        super().__init__("Hotelreservationsystem - Register New User")
+        self.add_option(MenuOption("Register new Admin account"))
+        self.add_option(MenuOption("Back"))
+        self._back = back
+
+    def _navigate(self, choice: int):
+        match choice:
+            case 1:
+                username = input("Username: ")
+                password = input("Password: ")
+                user_manager.create_admin(username=username, password=password)
+                return AdminRegistrationConfirmation(self)
+            case 2:
+                return self._back
+
 
 class BookingOverview(Menu):
     def __init__(self, back):
@@ -162,31 +162,12 @@ class BookingOverview(Menu):
             case 2:
                 return self._back
 
-
-# class UpdateHotel(Menu):
-#     def __init__(self, back):
-#         super().__init__("Hotelreservationsystem - Update Hotel")
-#         self.update_hotel = inventory_manager.update_hotel()
-#         if self.update_hotel is None:
-#             self.add_option(MenuOption("This Hotel is not available. Please try again"))
-#         else:
-#             self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{self.update_hotel}"))
-#         self.add_option(MenuOption("Quit"))
-#         self._back = back
-#
-#     def _navigate(self, choice: int):
-#         match choice:
-#             case 1:
-#                 return self._back
-#             case 2:
-#                 return self._back
-
 class UpdateHotel(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Update Hotel")
         self.add_option(MenuOption("View all hotels"))
         self.add_option(MenuOption("Search hotels"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -205,7 +186,7 @@ class ViewAllHotels(Menu):
         for hotel in self._all_hotels:
             self.add_option(MenuOption(hotel))
         print(self._all_hotels)
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -223,7 +204,7 @@ class SearchHotel(Menu):
                 self.add_option(MenuOption("This Hotel is not available. Please try again"))
         else:
             self.add_option(MenuOption(f"Congratulation! You updated the following hotel:{self._hotel}"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -269,7 +250,7 @@ class DeleteHotel(Menu):
         self.add_option(MenuOption(deletion_massage))
         # delete_hotel = self.delete_hotel.name
         # self.add_option(MenuOption(f"Congratulation! You removed the following hotel:{delete_hotel}"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -284,7 +265,7 @@ class AddHotel(Menu):
         self.add_hotel = inventory_manager.add_hotel()
         new_hotel = self.add_hotel.name
         self.add_option(MenuOption(f"Congratulation! You created a new hotel: {new_hotel}"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -300,7 +281,7 @@ class HotelsFilter1(Menu):
     def __init__(self, back, login):
         super().__init__("Hotelreservationsystem - Filter Hotel")
         self.add_option(MenuOption("Filter Hotels"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._login = login
         self._back = back
 
@@ -344,7 +325,7 @@ class RoomDetails(Menu):
             self.add_option(MenuOption(f"Amenities: {detail[3]}"))
             self.add_option(MenuOption(f"Description: {detail[4]}"))
             self.add_option(MenuOption(f"Price: {detail[5]}"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -417,7 +398,7 @@ class Current_Room(Menu):
         self._myenddate = myenddate
         self._mymaxguests = mymaxguests
         self._mylogin = login
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -483,7 +464,7 @@ class AvailableRooms(Menu):
         self._myenddate = end_date
         self._mymaxguests = max_guests
         self._login = login
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -512,7 +493,7 @@ class HotelDetails(Menu):
             self.add_option(MenuOption(f"Street: {detail[2]}"))
             self.add_option(MenuOption(f"Zip: {detail[3]}"))
             self.add_option(MenuOption(f"City: {detail[4]}"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -533,7 +514,7 @@ class Current_Hotel(Menu):
             self._mystars = detail[1]
             self._mycity = detail[4]
         self._login = login
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -574,7 +555,7 @@ class AllHotels(Menu):
             self.add_option(MenuOption(hotel))
         print(self._all_hotels)
         self._login = login
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
@@ -603,14 +584,15 @@ class HomeScreen(Menu):
                 self.add_option(MenuOption("Delete Hotel"))
                 self.add_option(MenuOption("Update Hotel"))
                 self.add_option(MenuOption("View all Bookings"))
-                self.add_option(MenuOption("Quit"))
+                self.add_option(MenuOption("Create new Admin User"))
+                self.add_option(MenuOption("Back"))
                 self._back = HotelMenu(self)
             else:
                 self.add_option(MenuOption("View Booking history"))
-                self.add_option(MenuOption("Quit"))
+                self.add_option(MenuOption("Back"))
                 self._back = HotelMenu(self)
         else:
-            self.add_option(MenuOption("Quit"))
+            self.add_option(MenuOption("Back"))
             self._back = HotelMenu(self)
 
     def _navigate(self, choice: int):
@@ -637,6 +619,8 @@ class HomeScreen(Menu):
             case 6:
                 return BookingOverview(self)
             case 7:
+                return RegisterNewAdmin(self)
+            case 8:
                 user_manager.logout()
                 return self._back
 
@@ -649,7 +633,7 @@ class HotelMenu(Menu):
         self.add_option(MenuOption("Login with Account"))
         #        self._Home_Admin = HomeScreenAdmin(self)
         self.add_option(MenuOption("Register New Account"))
-        self.add_option(MenuOption("Quit"))
+        self.add_option(MenuOption("Back"))
         self._back = back
 
     def _navigate(self, choice: int):
