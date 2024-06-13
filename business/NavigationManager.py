@@ -165,7 +165,6 @@ class BookingOverview(Menu):
 class UpdateHotel(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - Update Hotel")
-        self.add_option(MenuOption("View all hotels"))
         self.add_option(MenuOption("Search hotels"))
         self.add_option(MenuOption("Back"))
         self._back = back
@@ -173,27 +172,8 @@ class UpdateHotel(Menu):
     def _navigate(self, choice: int):
         match choice:
             case 1:
-                return ViewAllHotels(self)
-            case 2:
                 return SearchHotel(self)
-            case 3:
-                return self._back
-
-class ViewAllHotels(Menu):
-    def __init__(self,back):
-        super().__init__("Hotelreservationsystem - View Hotels")
-        self._all_hotels = search_manager.get_all_hotels()
-        for hotel in self._all_hotels:
-            self.add_option(MenuOption(hotel))
-        print(self._all_hotels)
-        self.add_option(MenuOption("Back"))
-        self._back = back
-
-    def _navigate(self, choice: int):
-        match choice:
-            case 1:
-                return self._back
-            case 5:
+            case 2:
                 return self._back
 
 class SearchHotel(Menu):
@@ -219,6 +199,7 @@ class UpdateGuestDetails(Menu):
     def __init__(self, back):
         super().__init__("Hotelreservationsystem - UpdateGuest")
         result = inventory_manager.update_guest_info()
+
         if result == "success":
             self.add_option(MenuOption("Update successful"))
         elif result == "no_change":
@@ -235,12 +216,13 @@ class UpdateGuestDetails(Menu):
 
     def _navigate(self, choice: int):
         match choice:
+            case 1:
+                return self._back
             case 2:
                 return self._back
-            case 3:
-                return self._back
-            case 4:
-                return self._back
+
+
+
 
 
 class DeleteHotel(Menu):
@@ -314,6 +296,7 @@ class HotelsFilter1(Menu):
                 return self._back
 
 
+
 class RoomDetails(Menu):
     def __init__(self, back, myroomid):
         super().__init__("Hotelreservierungssystem - Hotel Information")
@@ -330,7 +313,7 @@ class RoomDetails(Menu):
 
     def _navigate(self, choice: int):
         match choice:
-            case 6:
+            case 7:
                 return self._back
 
 
@@ -460,6 +443,7 @@ class AvailableRooms(Menu):
         else:
             for rooms in self.available_rooms:
                 self.add_option(MenuOption(f"Room number: {rooms[1]}, Type: {rooms[2]}, Price: {rooms[3]}"))
+
         self._mystartdate = start_date
         self._myenddate = end_date
         self._mymaxguests = max_guests

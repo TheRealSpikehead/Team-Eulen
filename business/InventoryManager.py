@@ -236,13 +236,13 @@ class InventoryManager(object):
             new_lastname = input("Enter new lastname (press enter to skip): ")
             new_email = input("Enter new email (press enter to skip): ")
 
-            if new_firstname != guest.firstname:
+            if new_firstname and new_firstname != guest.firstname:
                 guest.firstname = new_firstname
                 changes_made = True
-            if new_lastname != guest.lastname:
+            if new_lastname and new_lastname != guest.lastname:
                 guest.lastname = new_lastname
                 changes_made = True
-            if new_email != guest.email:
+            if new_email and new_email != guest.email:
                 guest.email = new_email
                 changes_made = True
 
@@ -271,6 +271,13 @@ class InventoryManager(object):
         bookings = session.query(Booking).filter(Booking.id == bookingid).first()
         session.delete(bookings)
         session.commit()
+
+
+    def add_booking(self):
+        pass
+
+    def update_booking(self, bookingid):
+        session = self.__Session()
 
 
 
