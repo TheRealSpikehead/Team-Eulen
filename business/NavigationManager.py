@@ -357,9 +357,11 @@ class ReservationConfirmation(Menu):
                 directory = filedialog.askdirectory(title="Wählen Sie ein Verzeichnis zum Speichern des Dokuments")
 
                 if directory:
-                    # Vollständiger Pfad zur Datei
-                    file_path = os.path.join(directory, "Buchungsbestätigung.docx")
-                reservation_manager.create_document(file_path=file_path, start_date=self._start_date, end_date=self._end_date, number_of_guests=self._number_of_guests, comment=self._comment, room_id=self._room_id, guest_id=self._guest_id, price=self._totalprice)
+                    Document_name = input("Name des Dokument: ")
+                    if not Document_name.endswith(".docx"):
+                        Document_name += ".docx"
+                    file_path = os.path.join(directory, Document_name)
+                    reservation_manager.create_document(file_path=file_path, start_date=self._start_date, end_date=self._end_date, number_of_guests=self._number_of_guests, comment=self._comment, room_id=self._room_id, guest_id=self._guest_id, price=self._totalprice)
                 return DocumentCreation(self, self._mylogin)
             case 3:
                 return HomeScreen(self, self._mylogin)
