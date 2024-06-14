@@ -19,7 +19,7 @@ Start der Anwendung
 Navigation und Input
 1. Auswahl von Optionen: Tastenzahl == Zahl nach dem #
 2. Back: Schritt zurück zur vorherigen Seite
-3. Start- und Endatum müssen mit Bindestrich eingeben werden
+3. Start- und Endatum müssen mit Bindestrich eingegeben werden
 
 
 Anleitung:
