@@ -14,7 +14,7 @@ Python Interpreter
 Start der Anwendung
 1. Start der Applikation: Run NaviagtionManager.py (Im NavigationManager.py file sind alle Manager miteinadner verknüpft).
 2. Start Hotel Management: Taste 1
-3. Anmeldung: Loggen SIe sich ein als Guest oder mit einem bestehenden Account. Falls die noch keine Account besitzen können Sie einen erstellen
+3. Anmeldung: Loggen SIe sich ein als Guest oder mit einem bestehenden Account. Falls die noch keinen Account besitzen, können Sie einen erstellen.
    
 Navigation und Input
 1. Auswahl von Optionen: Tastenzahl == Zahl nach dem #
