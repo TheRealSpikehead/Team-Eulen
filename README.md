@@ -58,7 +58,6 @@ Als Admin bietet mit der InventoryManager die Möglichkeit, Hotelinformationen z
 -	Buchungsübersicht aller Hotels der Gäste (3.2)
 -	Bearbeitung aller Buchungen aller Hotels (3.3)
 
-
 SearchManager
 Dieser bietet dem Gast und dem registrierten Gast die Möglichkeit, verfügbare Hotels und Zimmer nach seinen Wünschen zu durchsuchen. Der SearchManager ist nicht direkt ausführbar. Er übergibt die Ergebnisse direkt dem NavigationManager.
 -	Hotels in einer Stadt durchsuchen (1.1.1)
@@ -70,6 +69,31 @@ Dieser bietet dem Gast und dem registrierten Gast die Möglichkeit, verfügbare 
 -	Übersicht der Informationen des Zimmers; Zimmertyp, maximale Gästeanzahl, Beschreibung, Ausstattung, Preis pro Nacht und    Gesamtpreis (1.2.1)
 -	Nur die verfügbaren Zimmer sehen (1.2.2)
 
+NavigationManager
+Der NavigationManager spielt eine zentrale Rolle. Die verschiedenen Manager-Klassen SearchManager, InventoryManager, ReservationManager und UserManager werden importiert und instanziiert, um die Interaktionen zwischen ihnen und dem User zu koordinieren. 
+Seine Hauptaufgabe ist es, basierend auf den Eingaben des Benutzers die entsprechenden Funktionen der jeweiligen Manager aufzurufen und die Ansicht der Anwendung dementsprechend anzupassen. Dadurch bietet der NavigationManager eine strukturierte Navigation durch die verschiedenen Menüs.
+Diese Menüstruktur wird verwendet, um verschiedene Optionen für Benutzer und Admins bereitzustellen, die es den ihnen erlauben das Programm wie beabsichtigt zu verwenden. 
+Jedes Menü hat Optionen, um zur einer nächsten Menüebene zu gelangen oder um eine Aktion auszuführen.
+
+Beispiele hierfür sind:
+Die Aufforderung nach einer Anmeldung nach starten des Programms / die Möglichkeit einen neuen Benutzer zu registrieren.
+War dies erfolgreich wird das «RegistrationConfirmation» Menü angezeigt.
+
+Oder
+
+Bei «BookingChanges» wird das Löschen einer bestehenden Buchung ermöglicht. Nach erfolgreichem Löschen wird das «BookingDeletionConfimation» Menü angezeigt.
+Bei «BookingDeletionConfimation» erhält man neben der Bestätigung, dass eine Buchung erfolgreich gelöscht wurde, auch die Option zum «Home-Bildschirm» zurückzukehren.
+
+Oder
+
+Unter «RegisterNewAdmin» hat man die Möglichkeit einen neuen Admin zu registrieren. Der benutzer wird aufgefordert, Admin-Benutzernamen und Passwort einzugeben.
+Nach erfolgreicher Registrierung wird das «AdminRegistrationConfirmation» Menü angezeigt.
+Ebenfalls wird hier eine Bestätigungsmeldung für die erfolgreiche Anmeldung eines neuen Admins angezeigt, und erhält die Option zum regulären Login-Menü.
+
+Oder
+
+Nach dem Erstellen eines Bookings werden unter "ReservationConfirmation" dem Benutzer nach Abschluss einer Buchung die Gesamtkosten angezeigt.
+Ausserdem kann der User nun entscheiden, ob er ein Dokument erstellen oder zum Hauptmenü zurückkehren möchte.
 
 Annahmen und Interpretationen
 
