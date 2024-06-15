@@ -33,10 +33,10 @@ Zusätzlich, hat man die Option ein Word Dokument erstellen zu lassen um eine Bu
 
 Gastnutzer(nicht eingeloggt/registriert)
 - Ich möchte ein Hotel auswählen, um die Details zu sehen(z.B verfügbare Zimmer) (1.16)
-- Als Gastnutzer möchte ich ein Zimmer in einem bestimmten Hotel buchen.(1.3)
+- Als Gastnutzer möchte ich ein Zimmer in einem bestimmten Hotel buchen. (1.3)
 
 Admin-Nutzer
-- Als Admin-Nutzer des Buchungssystems möchte ich alle Buchungen aller Hotels sehen können, um eine Übersicht zu erhalten
+- Als Admin-Nutzer des Buchungssystems möchte ich alle Buchungen aller Hotels sehen können, um eine Übersicht zu erhalten. (3.2)
 
 UserManager: UserStories 1.4, 1.5, 1.6, 2.1 & 2.1.1
 Der Usermanager läuft im Hintergrund und verwaltet Benutzerkonten. Er hat kein eigenes UI, die Funktionen werden durch den Navigation Manager ausgeführt.
