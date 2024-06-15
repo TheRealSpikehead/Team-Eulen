@@ -78,6 +78,7 @@ Jedes Menü hat Optionen, um zur einer nächsten Menüebene zu gelangen oder um 
 Beispiele hierfür sind:
 Die Aufforderung nach einer Anmeldung nach starten des Programms / die Möglichkeit einen neuen Benutzer zu registrieren.
 War dies erfolgreich wird das «RegistrationConfirmation» Menü angezeigt.
+Unter "ReservationConfirmation" werden dem Benutzer nach Abschluss der Buchung die Gesamtkosten angezeigt und der User nun entscheiden, ob er ein Dokument erstellen oder zum Hauptmenü zurückkehren möchte.
 
 Oder
 
@@ -90,10 +91,6 @@ Unter «RegisterNewAdmin» hat man die Möglichkeit einen neuen Admin zu registr
 Nach erfolgreicher Registrierung wird das «AdminRegistrationConfirmation» Menü angezeigt.
 Ebenfalls wird hier eine Bestätigungsmeldung für die erfolgreiche Anmeldung eines neuen Admins angezeigt, und erhält die Option zum regulären Login-Menü.
 
-Oder
-
-Nach dem Erstellen eines Bookings werden unter "ReservationConfirmation" dem Benutzer nach Abschluss einer Buchung die Gesamtkosten angezeigt.
-Ausserdem kann der User nun entscheiden, ob er ein Dokument erstellen oder zum Hauptmenü zurückkehren möchte.
 
 Annahmen und Interpretationen
 
