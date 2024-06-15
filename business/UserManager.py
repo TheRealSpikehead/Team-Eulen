@@ -4,6 +4,7 @@ import tkinter as tk
 import sys
 from pathlib import Path
 
+
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, scoped_session, session
 from sqlalchemy.sql.functions import current_user
@@ -33,7 +34,7 @@ class UserManager:
         self._attempts_left = self._MAX_ATTEMPTS
         self._current_login = None
 
-
+#Es wird definiert dass man nur drei Loginversuche hat
     def has_attempts_left(self):
         if self._attempts_left > 0:
             return True
@@ -64,7 +65,7 @@ class UserManager:
     def get_bookings(self):
         return self.bookings()
 
-#Registrieren
+#User sowie Admins werden hier erstellt
 
     def create_guest(self, first_name, last_name, email, street, zip, city):
         query = select(Guest).where(Guest.type == "guest")
@@ -134,54 +135,4 @@ if __name__ == "__main__":
     #engine = create_engine(f"sqlite:///{db_path}", echo=False)
     #session = scoped_session(sessionmaker(bind=engine))
     user_manager = UserManager(db_path)
-
-    # 1. Admin? JA/NEIN
-    # 2. Schon Registriert? JA/NEIN
-    # 3. Registrieren? JA/NEIN
-
-    # Danach: Reservierung in lesbarer Form? JA/NEIN
-    # & --> Buchung ERSTELLEN, ÄNDERN ODER LÖSCHEN
-
-
-    print("US: 2.1 - Login")
-
-    # wenn sich ein Benutzer registrieren will
-    print("Registered User")
-    firstname = input("First Name: ")
-    lastname = input("Last Name: ")
-    email = input("Email: ")
-    street = input("Street Address: ")
-    zip = input("Zip: ")
-    city = input("City: ")
-    Username = input("Username: ")
-    password = input("Password: ")
-    # Funktioniert besser ohne?: user_manager.get_RegisteredGuest(firstname, lastname, email, street, zip, city, password)#
-
-    while user_manager.has_attempts_left():
-        in_username = input("Enter username: ")
-        in_password = input("Enter password: ")
-        if user_manager.login(in_username, in_password) is not None:
-            print("Login Successful")
-            break
-        else:
-            print("Username or Password wrong!")
-
-    if user_manager.get_current_login() is not None:
-        if user_manager.is_admin(user_manager.get_current_login()):
-            print(f"Welcome {user_manager.get_current_login().username}")
-            print("Admin rights granted")
-        else:
-            reg_user = user_manager.get_RegisteredGuest(user_manager.get_current_login())
-            print(f"Welcome {user_manager.get_current_login().username}")
-            #user_manager.logout()
-            print(user_manager.get_current_login())
-    else:
-        print("Too many attempts, close program")
-        sys.exit(1)
-
-        #TestTest
-
-        ## Ausgabe schreiben, dass Eingabe (Username, Passwort) falsch ist beim anmelden
-        ## Create Guest "Testen" Funktioniert es? wird es in der Datenbank gespeichert?
-        #
 
