@@ -26,3 +26,10 @@ Anleitung:
 ReservationManager: Beim ausführen des ReservationManagers öffnet sich ein UI, dort kann man nun das gewünschte Startdatum angeben und die Anzahl Tage die man im Hotel verbringen möchte. 
 Bei der eingabe der Anzahl Gäste, ändert sich die Anzahl der verfügbaren Hotels je nach Maximalen Plätzen des Hotelzimmer. Falls gewünscht kann man auch einen Kommentar dazu schreiben.
 Zusätzlich, hat man die Option ein Word Dokument erstellen zu lassen um eine Buchungsbestätigung zu erhalten. Beim erfolgreichen Buchen des Zimmers ertönt ein Sound.
+
+Beschreibung:
+UserManager: UserStories 1.4, 1.5, 1.6, 2.1 & 2.1.1
+Der Usermanager läuft im Hintergrund und verwaltet Benutzerkonten. Er hat kein eigenes UI, die Funktionen werden durch den Navigation Manager ausgeführt.
+Er ermöglicht das Erstellen von neuen Gästen, diese können sich registrieren, um auf mehr Funktionen zugreifen zu können (wie auf die Buchungshistorie zugreifen, oder kommende Buchungen erstellen, ändern oder stornieren). Oder der User kann sich anmelden, wenn bereits eine Registrierung ausgeführt wurde. Auch Admin-User werden durch den UserManager verwaltet.
+Bei der Anmeldung von Gästen und Admins wird jeweils nach der Eingabe «username» und «password» gefragt. Die beiden Inputs müssen für eine erfolgreiche Anmeldung mit den hinterlegten Angaben in der Database übereinstimmen. Gelingt die Anmeldung nach drei Versuchen nicht, wird das Programm gestoppt. 
+Ob Admin, Gast- oder Registrierter-Nutzer, es kann zu jeder Zeit höchstens ein Login auf dem Programm geben. Daher ist es wichtig, nach jeder Sitzung die Funktion «LOGOUT» aufzurufen.
