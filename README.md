@@ -51,7 +51,7 @@ Ob Admin, Gast- oder Registrierter-Nutzer, es kann zu jeder Zeit höchstens ein 
 - Als Registrierter Nutzer sotornieren/löschen als Anwendungsfall (2.1.1)
 
 InventoryManager
-Als Admin bietet mit der InventoryManager die Möglichkeit, Hotelinformationen zu pflegen, um aktuelle Informationen im System zu haben. Der InventoryManager ist nicht direkt ausfürbar, er übergibt die Ergebnisse direkt dem Navigation Manager.
+Als Admin bietet mit der InventoryManager die Möglichkeit, Hotelinformationen zu pflegen, um aktuelle Informationen im System zu haben. Der InventoryManager ist nicht direkt ausführbar, er übergibt die Ergebnisse direkt dem Navigation Manager.
 -	Hotels inkl. Räume zum System hinzufügen (3.1.1)
 -	Hotels inkl. Räume aus dem System entfernen (3.1.2)
 -	Hotels inkl. Räume im System aktualisieren (3.1.3.)
