@@ -51,7 +51,7 @@ Ob Admin, Gast- oder Registrierter-Nutzer, es können nicht zwei Logins zur selb
 - Als registrierter Nutzer seine Buchungen verwalten können (2.1.1)
 
 InventoryManager
-Als Admin bietet mit der InventoryManager die Möglichkeiten, Hotelinformationen zu pflegen, um aktuelle Informationen im System zu haben. Der InventoryManager ist nicht direkt ausführbar, er übergibt die Ergebnisse direkt dem Navigation Manager.
+Als Admin bietet mir der InventoryManager die Möglichkeiten, Hotelinformationen zu pflegen, um aktuelle Informationen im System zu haben. Der InventoryManager ist nicht direkt ausführbar, er übergibt die Ergebnisse direkt dem Navigation Manager.
 -	Hotels inkl. Räume zum System hinzufügen (3.1.1)
 -	Hotels inkl. Räume aus dem System entfernen (3.1.2)
 -	Hotels inkl. Räume im System aktualisieren (3.1.3.)
@@ -101,4 +101,4 @@ Neue Userstory Admin: Als Admin möchte ich neue Admin's hinzufügen können, um
 Wenn man als Admin eingeloggt ist, hat man nun Zugriff auf eine Funktion die das Erstellen eines neuen Admin ermöglicht, so dass dieser sich regulär mit "username" und "password" anmelden kann.
 
 Der Filter wurde Ergänzt:
-Im NavigationManager gibt es zwei Filtermöglichkeiten. Es kann durch "view_all_hotels" ein passendes Hotel ausgewählt und anschliessend nach verfügbaren Räumen gefiltert werden. Es ist zusätzlich möglich, ohne ein bestimmtes Hotel einen Filter zu setzen: "Filter Hotels and Rooms". Dadurch kann der Gast Passende Räume finden, ohne sich auf ein Hotel zu beschränken.
+Im NavigationManager gibt es zwei Filtermöglichkeiten. Durch "view_all_hotels" kann ein passendes Hotel ausgewählt und anschliessend nach verfügbaren Räumen gefiltert werden. Es ist zusätzlich möglich, ohne ein bestimmtes Hotel einen Filter zu setzen: "Filter Hotels and Rooms". Dadurch kann der Gast Passende Räume finden, ohne sich auf ein Hotel zu beschränken.
