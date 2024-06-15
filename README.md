@@ -38,11 +38,17 @@ Gastnutzer(nicht eingeloggt/registriert)
 Admin-Nutzer
 - Als Admin-Nutzer des Buchungssystems möchte ich alle Buchungen aller Hotels sehen können, um eine Übersicht zu erhalten. (3.2)
 
-UserManager: UserStories 1.4, 1.5, 1.6, 2.1 & 2.1.1
+UserManager
 Der Usermanager läuft im Hintergrund und verwaltet Benutzerkonten. Er hat kein eigenes UI, die Funktionen werden durch den Navigation Manager ausgeführt.
 Er ermöglicht das Erstellen von neuen Gästen, diese können sich registrieren, um auf mehr Funktionen zugreifen zu können (wie auf die Buchungshistorie zugreifen, oder kommende Buchungen erstellen, ändern oder stornieren). Oder der User kann sich anmelden, wenn bereits eine Registrierung ausgeführt wurde. Auch Admin-User werden durch den UserManager verwaltet.
 Bei der Anmeldung von Gästen und Admins wird jeweils nach der Eingabe «username» und «password» gefragt. Die beiden Inputs müssen für eine erfolgreiche Anmeldung mit den hinterlegten Angaben in der Database übereinstimmen. Gelingt die Anmeldung nach drei Versuchen nicht, wird das Programm gestoppt. 
-Ob Admin, Gast- oder Registrierter-Nutzer, es kann zu jeder Zeit höchstens ein Login auf dem Programm geben. Daher ist es wichtig, nach jeder Sitzung die Funktion «LOGOUT» aufzurufen.
+Ob Admin, Gast- oder Registrierter-Nutzer, es kann zu jeder Zeit höchstens ein Login auf dem Programm geben. Daher ist es wichtig, nach jeder Sitzung die Funktion «logout» aufzurufen.
+- Als Gastnutzer möglichst wenige Informationen preisgeben müssen (1.4)
+- Als Gastnutzer Details meienr Reservierung in einer Lesbaren Form erhalten (1.5)
+- Als Gastnutzer registrieren können (1.6)
+- Als Registrierter Nutzer in bestehendes Konto einloggen (2.1)
+- Als Registrierter Nutzer auf Buchungshistorie zugreiffen (2.1)
+- Als Registrierter Nutzer sotornieren/löschen als Anwendungsfall (2.1.1)
 
 InventoryManager
 Als Admin bietet mit der InventoryManager die Möglichkeit, Hotelinformationen zu pflegen, um aktuelle Informationen im System zu haben. Der InventoryManager ist nicht direkt ausfürbar, er übergibt die Ergebnisse direkt dem Navigation Manager.
@@ -68,7 +74,7 @@ Dieser bietet dem Gast und dem registrierten Gast die Möglichkeit, verfügbare 
 Annahmen und Interpretationen
 
 UserStory 2.1.1: Die Anwendungsfälle für meine Buchungen sind "neu/erstellen", "ändern/aktualisieren", "stornieren/löschen".
-Diese Userstory wurde von uns nicht in ihrer ganzheit übernommen, User können Buchungen erstellen und stornieren, aber nicht ändern. Grund hierfür ist die unverhältnissmässig komplexität einer solchen Funktion gegenüber des Nutzens. User werden statdessen gebeten ihre Buchung zu stornieren, und eine neue zu erstellen.
+Diese Userstory wurde von uns nicht in ihrer ganzheit übernommen, User können Buchungen über das Fenster "meine Buchungen" stornieren, aber nicht ändern oder erstellen. Grund hierfür ist die unverhältnissmässig komplexität einer solchen Funktion gegenüber des Nutzens. User werden statdessen gebeten ihre Buchung zu stornieren, und regulär eine neue zu erstellen.
 
 Neue Userstory Admin: Als Admin möchte ich neue Admin's hinzufügen können um neuen Mitarbeitenden Selbstständigkeit am Arbeitsplatz zu bieten.
 Wenn man als Admin eingeloggt ist, Hat man nun Zugrif auf eine Funtion die das Erstellen eines neuen Admin ermöglicht, so dass dieser sich regulär mit "username" und "password" anmelden kann.
