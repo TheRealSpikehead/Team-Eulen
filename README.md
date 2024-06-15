@@ -37,6 +37,27 @@ Er ermöglicht das Erstellen von neuen Gästen, diese können sich registrieren,
 Bei der Anmeldung von Gästen und Admins wird jeweils nach der Eingabe «username» und «password» gefragt. Die beiden Inputs müssen für eine erfolgreiche Anmeldung mit den hinterlegten Angaben in der Database übereinstimmen. Gelingt die Anmeldung nach drei Versuchen nicht, wird das Programm gestoppt. 
 Ob Admin, Gast- oder Registrierter-Nutzer, es kann zu jeder Zeit höchstens ein Login auf dem Programm geben. Daher ist es wichtig, nach jeder Sitzung die Funktion «LOGOUT» aufzurufen.
 
+InventoryManager
+Als Admin bietet mit der InventoryManager die Möglichkeit, Hotelinformationen zu pflegen, um aktuelle Informationen im System zu haben. Der InventoryManager ist nicht direkt ausfürbar, er übergibt die Ergebnisse direkt dem Navigation Manager.
+-	Hotels inkl. Räume zum System hinzufügen (3.1.1)
+-	Hotels inkl. Räume aus dem System entfernen (3.1.2)
+-	Hotels inkl. Räume im System aktualisieren (3.1.3.)
+-	Buchungsübersicht aller Hotels der Gäste (3.2)
+-	Bearbeitung aller Buchungen aller Hotels (3.3)
+
+
+SearchManager
+Der SearchManager bietet dem Gast und dem registrierten Gast die Möglichkeit, verfügbare Hotels und Zimmer nach seinen Wünschen zu durchsuchen. Der SearchManager ist nicht direkt ausführbar. Er übergibt die Ergebnisse direkt dem NavigationManager.
+-	Hotels in einer Stadt durchsuchen (1.1.1)
+-	Hotels in einer Stadt, nach Anzahl Sterne durchsuchen (1.1.2)
+-	Hotels in einer Stadt, nach Anzahl Sterne und Gästeanzahl durchsuchen (1.1.3)
+-	Hotels in einer Stadt, nach Anzahl Sterne, Gästeanzahl, Start- und Enddatum durchsuchen (1.1.4)
+-	Übersicht der Information pro Hotel (1.1.5)
+-	Übersicht der verfügbaren Zimmer pro Hotel (1.1.6)
+-	Übersicht der Informationen des Zimmers; Zimmertyp, maximale Gästeanzahl, Beschreibung, Ausstattung, Preis pro Nacht und    Gesamtpreis (1.2.1)
+-	Nur die verfügbaren Zimmer sehen (1.2.2)
+
+
 Annahmen und Interpretationen
 
 UserStory 2.1.1: Die Anwendungsfälle für meine Buchungen sind "neu/erstellen", "ändern/aktualisieren", "stornieren/löschen".
