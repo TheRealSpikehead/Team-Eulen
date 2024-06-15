@@ -8,7 +8,8 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from data_access.data_base import init_db  # Sicherstellen, dass diese Implementierung verfügbar ist
-from data_models.models import Room, Guest, Booking, RegisteredGuest  # Sicherstellen, dass diese Klassen verfügbar sind
+from data_models.models import Room, Guest, Booking, RegisteredGuest, \
+    Hotel  # Sicherstellen, dass diese Klassen verfügbar sind
 from docx import Document
 import tkinter as tk
 from tkinter import messagebox, filedialog
@@ -61,11 +62,18 @@ class ReservationManager(object):
         result = round(price + diff, 2)
         return result
 
+    # def get_bookings(self, guest_id):
+    #     query = select(Hotel.name, Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date, Booking.id).where(
+    #         Booking.guest_id == guest_id)
+    #     result = self._session.execute(query).fetchall()
+    #     return result
+
     def get_bookings(self, guest_id):
-        query = select(Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date, Booking.id).where(
-            Booking.guest_id == guest_id)
+        query = select(Hotel.name, Booking.room_number, Booking.number_of_guests, Booking.start_date, Booking.end_date, Booking.id).\
+            join(Hotel, Booking.room_hotel_id == Hotel.id). where(Booking.guest_id == guest_id)
         result = self._session.execute(query).fetchall()
         return result
+
 
     def get_filtered_rooms(self, number_of_guests):
         query = select(Room).where(Room.max_guests >= number_of_guests)
