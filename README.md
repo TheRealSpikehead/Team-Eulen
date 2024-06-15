@@ -76,7 +76,7 @@ Diese Menüstruktur wird verwendet, um verschiedene Optionen für Benutzer und A
 Jedes Menü hat Optionen, um zur einer nächsten Menüebene zu gelangen oder um eine Aktion auszuführen.
 
 Beispiele hierfür sind:
-Die Aufforderung nach einer Anmeldung nach starten des Programms / die Möglichkeit einen neuen Benutzer zu registrieren.
+Die Aufforderung sich anzumelden nach starten des Programms / die Möglichkeit einen neuen Benutzer zu registrieren.
 War dies erfolgreich wird das «RegistrationConfirmation» Menü angezeigt.
 Unter "ReservationConfirmation" werden dem Benutzer nach Abschluss der Buchung die Gesamtkosten angezeigt und der User nun entscheiden, ob er ein Dokument erstellen oder zum Hauptmenü zurückkehren möchte.
 
