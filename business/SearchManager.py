@@ -1,11 +1,9 @@
 from pathlib import Path
-
-from sqlalchemy import create_engine, select, join, func, and_, or_, not_, exists, distinct
-from sqlalchemy.orm import sessionmaker, scoped_session, aliased
+from sqlalchemy import create_engine, select, join, and_, or_
+from sqlalchemy.orm import sessionmaker, scoped_session
 from data_access.data_base import init_db
 from data_models.models import *
 from data_models.models import Booking
-from datetime import datetime
 
 
 class SearchManager(object):
@@ -15,20 +13,6 @@ class SearchManager(object):
             init_db(database_file, generate_example_data=True)
         self.__engine = create_engine(f'sqlite:///{database_file}', echo=False)
         self.__session = scoped_session(sessionmaker(bind=self.__engine))
-
-    # --------------------------------get hotels------------------------------------------------------------------------
-    def get_hotels(self, name: str = None, stars: int = None, address: str = None):
-        query = select(Hotel)
-
-        if name:
-            query = query.where(Hotel.name.like(f"%{name}%"))
-        if stars is not None:
-            query = query.where(Hotel.stars == stars)
-        if address:
-            query = query.join(Hotel.address).where(Address.city.like(f"%{address}%"))
-
-        hotels = self.__session.execute(query).scalars().all()
-        return hotels
 
     # --------------------------------get all hotels--------------------------------------------------------------------
     def get_all_hotels(self):
@@ -46,7 +30,7 @@ class SearchManager(object):
         return rooms
 
     # --------------------------get hotel information-------------------------------------------------------------------
-    def get_hotel_information(self, Hotel_name):  # 1.1.5
+    def get_hotel_information(self, Hotel_name):
         j = join(Hotel, Address, Hotel.address_id == Address.id)
         query = select(Hotel.name, Hotel.stars, Address.street, Address.zip, Address.city).select_from(j). \
             where(and_(Hotel.name == Hotel_name))
@@ -63,116 +47,7 @@ class SearchManager(object):
         room_details = self.__session.execute(query)
         return room_details
 
-    # -------------------------get available hotels---------------------------------------------------------------------
-    def get_available_hotels(self):
-
-        city = input("Enter the city (leave blank if not specific): ") or None
-        stars = input("Enter minimum stars (leave blank if not specific): ") or None
-        max_guests = input("Enter maximum guests (leave blank if not specific): ") or None
-        start_date = input("Enter start date (YYYY-MM-DD, leave blank if not specific): ") or None
-        end_date = input("Enter end date (YYYY-MM-DD, leave blank if not specific): ") or None
-
-        if start_date:
-            start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        if end_date:
-            end_date = datetime.strptime(end_date, '%Y-%m-%d')
-
-        query = select(Hotel). \
-            join(Address). \
-            join(Room, Hotel.id == Room.hotel_id). \
-            outerjoin(Booking, Room.hotel_id == Booking.room_hotel_id). \
-            group_by(Hotel.id)
-
-        conditions = []
-
-        if city:
-            conditions.append(Address.city == city)
-        if stars:
-            conditions.append(Hotel.stars >= int(stars))
-        if max_guests:
-            conditions.append(Room.max_guests >= int(max_guests))
-
-        booking_conditions = []
-
-        if start_date and end_date:
-            booking_conditions.append(or_(
-                Booking.id.is_(None),
-                Booking.end_date <= start_date, Booking.start_date >= end_date)
-            )
-
-        if booking_conditions:
-            conditions.append(and_(*booking_conditions))
-
-        if conditions:
-            query = query.where(and_(*conditions))
-
-        available_hotels = self.__session.execute(query).scalars().all()
-
-        if not available_hotels:
-            print("No available hotels found.")
-        else:
-            print("Available hotels:")
-            for hotel in available_hotels:
-                print(f"Hotel Name: {hotel.name}, Located in: {hotel.address.city}")
-
-    # -----------------------available Rooms in hotels------------------------------------------------------------------
-
-    def get_userinput(self):
-        city = input("Enter the city (leave blank if not specific): ") or None
-        stars = input("Enter minimum stars (leave blank if not specific): ") or None
-        max_guests = input("Enter maximum guests (leave blank if not specific): ") or None
-        start_date = input("Enter start date (YYYY-MM-DD, leave blank if not specific): ") or None
-        end_date = input("Enter end date (YYYY-MM-DD, leave blank if not specific): ") or None
-        return city, stars, max_guests, start_date, end_date
-
-    # def get_available_hotels_and_rooms(self, city: str, stars: int, max_guests: int, start_date: str, end_date: str):
-    #
-    #     query = select(Hotel.name, Room.number, Room.description, Room.price, Room.id, Booking.id). \
-    #         join(Address). \
-    #         join(Room, Hotel.id == Room.hotel_id). \
-    #         outerjoin(Booking, and_(Room.hotel_id == Booking.room_hotel_id, Room.number == Booking.room_number))
-    #
-    #     conditions = []
-    #
-    #
-    #     if city:
-    #         conditions.append(Address.city == city)
-    #     if stars:
-    #         conditions.append(Hotel.stars >= int(stars))
-    #     if max_guests:
-    #         conditions.append(Room.max_guests >= int(max_guests))
-    #
-    #     if start_date and end_date:
-    #         booking_conflict_condition = and_(
-    #             Booking.start_date <= end_date,
-    #             Booking.end_date >= start_date
-    #         )
-    #
-    #         # booking_exist_condition = Booking.id.is_not(None)
-    #
-    #         availability_condition = or_(
-    #             Booking.id.is_(None),
-    #             not_(booking_conflict_condition)
-    #         )
-    #
-    #         conditions.append(availability_condition)
-    #
-    #     if conditions:
-    #         query = query.group_by(Room.number).where(and_(*conditions))
-    #         # query = query.group_by(Room.number)
-    #
-    #         # Ausführen der Abfrage
-    #     available_rooms = self.__session.execute(query).fetchall()
-    #     # for room in available_rooms:
-    #     #     distinct(Room.number)
-    #
-    #     if not available_rooms:
-    #         print("No available hotels found.")
-    #
-    #     return available_rooms
-
-    # ------------------------------------------------------------------------------------------------------------------
-
+    # -----------------------available rooms in hotels------------------------------------------------------------------
     def get_available_hotels_and_rooms(self, city: str, stars: int, max_guests: int, start_date: str, end_date: str):
         query = select(Hotel.name, Room.number, Room.description, Room.price, Room.id). \
             join(Address). \
@@ -214,64 +89,7 @@ class SearchManager(object):
         return available_rooms
 
 
-    # if start_date:
-    #    start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    # if end_date:
-    #    end_date = datetime.strptime(end_date, '%Y-%m-%d')
-
-    # query = select(Hotel.name, Room.number, Room.description, Room.price, Room.id,
-    #                Booking.id, Booking.start_date, Booking.end_date). \
-    #     join(Address). \
-    #     join(Room, Hotel.id == Room.hotel_id). \
-    #     outerjoin(Booking, and_(Room.hotel_id == Booking.room_hotel_id, Room.number == Booking.room_number))
-    #
-    # conditions = []
-    #
-    # if city:
-    #     conditions.append(Address.city == city)
-    # if stars:
-    #     conditions.append(Hotel.stars >= int(stars))
-    # if max_guests:
-    #     conditions.append(Room.max_guests >= int(max_guests))
-    #
-    # booking_conditions = []
-    #
-    # if start_date and end_date:
-    #     booking_conditions.append(or_(
-    #         Booking.id.is_(None),
-    #         and_(
-    #             Booking.end_date < start_date,
-    #             Booking.start_date >= end_date
-    #         )
-    #     ))
-    #
-    #
-    # if booking_conditions:
-    #     conditions.append(and_(*booking_conditions))
-    #
-    # if conditions:
-    #     query = query.where(and_(*conditions))
-    # print(conditions)
-    # print(query)
-    #
-    # available_rooms = self.__session.execute(query).fetchall()
-    #
-    # if not available_rooms:
-    #     print("No available hotels found.")
-    #
-    # return available_rooms
-
-    # else:
-    # print("Available rooms:")
-    # for room in available_rooms:
-    # print(f"Hotel Name: {room[0]}, Room Number: {room[1]}, Description: {room[2]}, Price: {room[3]}")
-
 
 if __name__ == "__main__":
     sm = SearchManager('../data/database.db')
-    # city, stars, max_guests, start_date, end_date = sm.get_userinput()
-    # sm.get_available_hotels_and_rooms(city, stars, max_guests, start_date, end_date)
-    sm.get_available_hotels()
-    # sm.get_room_details()
-    # sm.get_hotel_information()
-    # sm.get_all_hotels()
+

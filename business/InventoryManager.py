@@ -1,9 +1,4 @@
-# Möglichkeiten für den Admin Nutzer um Hotels und Buchungen zu verwalten
-# Option1: Maintain Hotel Information's -> add Hotel, remove Hotel, update Hotel
-# Option2: View all Bookings ... -> get all Bookings -> update Bookings
-# Option3: Update room availability ... -> update room availability, update price
-
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from data_models.models import *
 
@@ -55,14 +50,8 @@ class InventoryManager(object):
 
         return new_hotel
 
-    # Der Input Room block wurde in eine While SChleife eingebettet so dass wenn der Benutzer 'y' wählt der ganze Input
+    # Der Input Room block wurde in eine While Schleife eingebettet so dass wenn der Benutzer 'y' wählt der ganze Input
     # Block nochmals aufgerufen wird bis er 'n' wählt oder != 'y'
-
-    #     print("Hotel and Address was successfully added")
-    #     return new_hotel
-    #
-    # def close1(self) -> None:
-    #     self.__Session.remove()
 
     # -------------------------------Remove hotels from the system------------------------------------------------------
 
@@ -110,7 +99,8 @@ class InventoryManager(object):
                 print(f"No Hotel {hotel_name} was found")
                 return None
 
-            # Update Hotel Information
+            # 'or None' wid verwendet, damit der Admin nur die Eigenschaften ändern kann die er möchte. Dies ermöglicht
+            # ihm das Überspringen vom Eingaben
             new_name = input("New name of the hotel (leave blank if no change): ") or None
             new_stars = input("New star rating (leave blank if no change): ") or None
             new_street = input("New street (leave blank if no change): ") or None
@@ -130,7 +120,7 @@ class InventoryManager(object):
 
             session.commit()
 
-            # List all rooms
+            # Listet alle Räume auf
             rooms = session.query(Room).filter(Room.hotel_id == hotel.id).all()
             print("Rooms:")
             for room in rooms:
@@ -157,7 +147,7 @@ class InventoryManager(object):
             session.close()
 
     def update_room_details(self, room):
-        session = self.__Session()  # Ensure you have a valid session
+        session = self.__Session()
         new_number = input("New room number (leave blank if no change): ") or None
         new_type = input("New room type (leave blank if no change): ") or None
         new_max_guest = input("New room max_guest (leave blank if no change): ") or None
@@ -179,7 +169,6 @@ class InventoryManager(object):
             room.price = new_price
 
         session.commit()
-
 
     # ----------------------View all bookings from each Hotel-----------------------------------------------------------
 
@@ -213,10 +202,9 @@ class InventoryManager(object):
     def close4(self):
         session = self.__Session.remove()
 
-    # --------------------------------Edit Bookings [Optional]----------------------------------------------------------
+    # --------------------------------Edit Bookings as Admin------------------------------------------------------------
     def update_guest_info(self):
         session = self.__Session()
-        # self.get_all_bookings_grouped_by_hotel()
         try:
             booking_id = int(input("Enter the Booking ID to the guest to update: "))
             session = self.__Session()
@@ -225,12 +213,10 @@ class InventoryManager(object):
                 print("No bookings found")
                 return "no_booking"
 
-
             guest = booking.guest
             print(f"Current Guest Name: {guest.firstname}, {guest.lastname}")
 
             changes_made = False
-
 
             new_firstname = input("Enter new firstname (press enter to skip): ")
             new_lastname = input("Enter new lastname (press enter to skip): ")
@@ -265,6 +251,7 @@ class InventoryManager(object):
         finally:
             session.close()
 
+    # ----------------------------Buchungsverwaltung als registierter Nutzer--------------------------------------------
 
     def delete_booking(self, bookingid):
         session = self.__Session()
@@ -273,30 +260,5 @@ class InventoryManager(object):
         session.commit()
 
 
-    def add_booking(self):
-        pass
-
-    def update_booking(self, bookingid):
-        session = self.__Session()
-
-
-
-
-
-    # # ----------------Update Room availability and Price [Optional]---------------------------------------------------
-    #
-    # def updateRoomAvailability(self):
-    #     pass
-
-
 if __name__ == "__main__":
     im = InventoryManager()
-    # im.add_hotel_and_room()
-    # im.remove_hotel()
-    # im.update_hotel()
-    # im.get_all_bookings_grouped_by_hotel()
-    #
-    # im.close1()
-    # im.close2()
-    # im.close3()
-    # im.close4()
