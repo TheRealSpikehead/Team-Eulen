@@ -98,7 +98,7 @@ UserStory 2.1.1: Die Anwendungsfälle für meine Buchungen sind "neu/erstellen",
 Diese Userstory wurde von uns nicht in ihrer ganzheit übernommen, User können Buchungen über das Fenster "meine Buchungen" stornieren, aber nicht ändern oder erstellen. Grund hierfür ist die unverhältnissmässig komplexität einer solchen Funktion gegenüber des Nutzens. User werden statdessen gebeten ihre Buchung zu stornieren, und regulär eine neue zu erstellen.
 
 Neue Userstory Admin: Als Admin möchte ich neue Admin's hinzufügen können um neuen Mitarbeitenden Selbstständigkeit am Arbeitsplatz zu bieten.
-Wenn man als Admin eingeloggt ist, Hat man nun Zugrif auf eine Funtion die das Erstellen eines neuen Admin ermöglicht, so dass dieser sich regulär mit "username" und "password" anmelden kann.
+Wenn man als Admin eingeloggt ist, Hat man nun Zugriff auf eine Funktion die das Erstellen eines neuen Admin ermöglicht, so dass dieser sich regulär mit "username" und "password" anmelden kann.
 
 Der Filter wurde Ergänzt:
-Im NavigationManager kann durch "view_all_hotels" mit gewünschten Kriterien nach passenden Hotels gefiltert werden. Es wurde ergänzt, dass durch den gleichen Filter "hotel" durch "room" ersetzt werden kann. Dadurch kann der Gast Passende Räume finden ohne sich auf ein Hotel zu beschränken. Zusätzlich werden Angaben(wie Gästeanzahl) vom Filter beibehalten wenn von "hotel" zu "room" gewechselt wird.
+Im NavigationManager gibt es zwei Filtermöglichkeiten. Es kann durch "view_all_hotels" ein passendes Hotel ausgewählt und anschliessend nach verfügbaren Räume gefiltert werden. Es ist zusätzlich möglich ohne ein bestimmtes Hotel einen Filtern zu setzen: "Filter Hotels and Rooms". Dadurch kann der Gast Passende Räume finden ohne sich auf ein Hotel zu beschränken.

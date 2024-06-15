@@ -584,11 +584,11 @@ class HomeScreen(Menu):
                 self.add_option(MenuOption("Update Hotel"))
                 self.add_option(MenuOption("View all Bookings"))
                 self.add_option(MenuOption("Create new Admin User"))
-                self.add_option(MenuOption("Back"))
+                self.add_option(MenuOption("Logout"))
                 self._back = HotelMenu(self)
             else:
                 self.add_option(MenuOption("View Booking history"))
-                self.add_option(MenuOption("Back"))
+                self.add_option(MenuOption("Logout"))
                 self._back = HotelMenu(self)
         else:
             self.add_option(MenuOption("Back"))
