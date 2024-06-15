@@ -62,8 +62,6 @@ class UserManager:
     def get_current_login(self):
         return self._current_login
 
-    def get_bookings(self):
-        return self.bookings()
 
 #User sowie Admins werden hier erstellt
 
