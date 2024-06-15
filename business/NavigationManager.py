@@ -106,7 +106,7 @@ class BookingHistory(Menu):
             # Benutzer hat "Back" ausgewählt
             return self._back
         elif 1 <= choice <= len(self.booking_history):
-            mybooking = self.booking_history[choice - 1][4]
+            mybooking = self.booking_history[choice - 1][5]
             return BookingChanges(self, mybooking, self._login)
         else:
             print("Ungültige Auswahl.")
@@ -267,7 +267,7 @@ class HotelsFilter1(Menu):
         self._login = login
         self._back = back
 
-    def _navigate(self, choice: int, available_hotels=None):
+    def _navigate(self, choice: int):
         match choice:
             case 1:
                 valid_date = False
