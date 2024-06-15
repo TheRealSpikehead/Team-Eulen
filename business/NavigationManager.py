@@ -262,7 +262,7 @@ class AddHotel(Menu):
 class HotelsFilter1(Menu):
     def __init__(self, back, login):
         super().__init__("Hotelreservationsystem - Filter Hotel")
-        self.add_option(MenuOption("Filter Hotels"))
+        self.add_option(MenuOption("Filter Hotels and Rooms"))
         self.add_option(MenuOption("Back"))
         self._login = login
         self._back = back
@@ -351,11 +351,13 @@ class ReservationConfirmation(Menu):
     def _navigate(self, choice: int):
         match choice:
             case 2:
+                #Hier kann ein Dokument der Buchung abgespeichert werden. Es wird ein Fenster hinter pycharm geöffnet
                 root = Tk()
                 root.withdraw()
 
                 directory = filedialog.askdirectory(title="Wählen Sie ein Verzeichnis zum Speichern des Dokuments")
 
+                #Hier wird der Name des Dokuments angegeben und als Word abgespeichert
                 if directory:
                     Document_name = input("Name des Dokument: ")
                     if not Document_name.endswith(".docx"):
@@ -391,11 +393,22 @@ class Current_Room(Menu):
             case 1:
                 return RoomDetails(self, self._myroomid)
             case 2:
-                if self._Isguest is None:
-                    firstname = input("Enter firstname: ")
-                    lastname = input("Enter lastname: ")
-                    guest_id = user_manager.get_Guest(firstname, lastname)
-                    comment = input("Enter a comment here: ")
+                if self._Isguest is None:       #Hier wird kontrolliert ob es bereits einen Guest User mit dem Vor und Nachnamen gibt
+                    while True:
+                        firstname = input("Enter firstname: ")
+                        lastname = input("Enter lastname: ")
+                        guest_id = user_manager.get_Guest(firstname, lastname)
+                        if guest_id is not None:
+                            print("Successfully found your Guest User")
+                            comment = input("Enter a comment here: ")
+                            break
+                        else:
+                            print("There is no User with this name")
+                            print("Do you want to try again? y/n")      #Diese Zeile wurde eingeführt damit man die möglichkeit hat den Loop zu unterbrechen
+                            answer = input()
+                            if answer == "n" or answer == "N":
+                                return Current_Room(self, self._myroomid, self._mymaxguests, self._mystartdate, self._myenddate, self._mylogin)
+
                     mybooking = reservation_manager.make_booking(room_id=self._myroomid, guest_id=guest_id,
                                                                  start_date=self._mystartdate, end_date=self._myenddate,
                                                                  number_of_guests=self._mymaxguests,
@@ -409,7 +422,7 @@ class Current_Room(Menu):
                                                                  comment=comment)
                     return ReservationConfirmation(self, mybooking, self._mylogin, self._mystartdate, self._myenddate, self._mymaxguests, comment, self._myroomid, self._rguest)
             case 3:
-                if self._Isguest is None:
+                if self._Isguest is None:       #Hier kann ein neuer Gastuser erstellt werden um eine Reservation zu tätigen
                     print("Please give us your Personal Information so you can proceed with the Reservation")
                     firstname = input("Enter your first name: ")
                     lastname = input("Enter your last name: ")
@@ -462,7 +475,7 @@ class AvailableRooms(Menu):
         elif 1 <= choice <= len(self.available_rooms):
             # Der Benutzer hat ein Hotel ausgewählt
             selected_room = self.available_rooms[choice - 1]
-            myroomid = selected_room[-1]
+            myroomid = selected_room[-1] #Hier wird nicht der gesamte Wert sondern nur der letzte Wert (room_id) in die Variable geschrieben
             return Current_Room(self, myroomid, self._mymaxguests, self._mystartdate, self._myenddate, self._login)
         else:
             print("Ungültige Auswahl.")
@@ -496,7 +509,7 @@ class Current_Hotel(Menu):
         # self.add_option(MenuOption("View All Rooms"))
         self.add_option(MenuOption("Available Rooms"))
         self._detail = search_manager.get_hotel_information(myhotel)
-        for detail in self._detail:
+        for detail in self._detail: #Hier werden die jeweiligen Information vom Hotel ausgegeben, welche vom Filter verwendet werden
             self._mystars = detail[1]
             self._mycity = detail[4]
         self._login = login
@@ -508,7 +521,7 @@ class Current_Hotel(Menu):
             case 1:
                 return self._HotelDetails
             case 2:
-                valid_date = False
+                valid_date = False #Mit den while try loops wird sichergestellt das ein korrektes Datum und int angegeben werden
                 while not valid_date:
                     try:
                         start_date_input = input("Enter start date (YYYY-MM-DD): ")
@@ -550,7 +563,7 @@ class AllHotels(Menu):
             return self._back
         elif 1 <= choice <= len(self._all_hotels):
             # Der Benutzer hat ein Hotel ausgewählt
-            myhotel = self._all_hotels[choice - 1]
+            myhotel = self._all_hotels[choice - 1] #Hier wird die Auswahl(Hotel name) des Users in eine Variable geschrieben
             return Current_Hotel(self, myhotel, self._login)
         else:
             print("Ungültige Auswahl.")
@@ -561,9 +574,9 @@ class HomeScreen(Menu):
     def __init__(self, back, login=None):
         super().__init__("Hotelreservationssystem - HomeScreen")
         self.add_option(MenuOption("View all Hotels"))
-        self.add_option(MenuOption("Filter Hotels"))
+        self.add_option(MenuOption("Filter Hotels and Rooms"))
         self._login = login
-        if login is not None:
+        if login is not None:           #Durch die Variable login und isadmin wird ermittelt welche Menupunkte angezeigt werden
             self._isadmin = user_manager.is_admin(login)
             if self._isadmin == True:
                 self.add_option(MenuOption("Add Hotel"))
@@ -627,7 +640,7 @@ class HotelMenu(Menu):
             case 1:
                 login = None
                 return HomeScreen(self, login)
-            case 2:
+            case 2:         #Mit diesem Loop wird überprüft ob die Anmeldung valid ist
                 while user_manager.has_attempts_left():
                     in_username = input("Enter username: ")
                     in_password = input("Enter password: ")
@@ -646,21 +659,19 @@ class HotelMenu(Menu):
                         print()
                         print()
                     else:
-                        reg_user = user_manager.get_RegisteredGuest(user_manager.get_current_login())
+                        user_manager.get_RegisteredGuest(user_manager.get_current_login())
                         print()
                         print()
                         print(
                             f"Welcome {user_manager.get_current_login().username} ")
                         print()
                         print()
-                        # user_manager.logout()
-                        # print(user_manager.get_current_login())  # ?
                 else:
                     print("Too many attempts, close program")
                     return None
+                return HomeScreen(self, login)
                 # user_manager.has_attempts_left()
                 # login = user_manager.login(username=input("Username: "), password=input("Password: "))
-                return HomeScreen(self, login)
             case 3:
                 return RegisterNewUser(self)
             case 4:
