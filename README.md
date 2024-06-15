@@ -5,7 +5,7 @@ Aufgabenaufteilung:
 Robin Meier: Navigation Manager
 Andrej Mauron: User Manager
 Jan Steiner: SearchManager & InventoryManager
-Flavio Sibilia: ReservationManager
+Flavio Sibilia: ReservationManager (User Stories: Als Gastnutzer möchte ich ein Hotel auswählen, um die Details zu sehen; Als Gastnutzer möchte ich ein Zimmer in einem bestimmten Hotel buchen; Als Admin-Nutzer des Buchungssystems möchte ich alle Buchungen aller Hotels sehen können, um eine Übersicht zu haben. 
 
 Python Interpreter
 - Python 3.12
