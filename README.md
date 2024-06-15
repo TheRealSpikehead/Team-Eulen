@@ -47,7 +47,7 @@ Als Admin bietet mit der InventoryManager die Möglichkeit, Hotelinformationen z
 
 
 SearchManager
-Der SearchManager bietet dem Gast und dem registrierten Gast die Möglichkeit, verfügbare Hotels und Zimmer nach seinen Wünschen zu durchsuchen. Der SearchManager ist nicht direkt ausführbar. Er übergibt die Ergebnisse direkt dem NavigationManager.
+Dieser bietet dem Gast und dem registrierten Gast die Möglichkeit, verfügbare Hotels und Zimmer nach seinen Wünschen zu durchsuchen. Der SearchManager ist nicht direkt ausführbar. Er übergibt die Ergebnisse direkt dem NavigationManager.
 -	Hotels in einer Stadt durchsuchen (1.1.1)
 -	Hotels in einer Stadt, nach Anzahl Sterne durchsuchen (1.1.2)
 -	Hotels in einer Stadt, nach Anzahl Sterne und Gästeanzahl durchsuchen (1.1.3)
