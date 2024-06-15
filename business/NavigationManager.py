@@ -94,15 +94,21 @@ class BookingHistory(Menu):
         super().__init__("Hotelreservationsystem - Booking Overview")
         guest_id = user_manager.get_RegisteredGuest(login)
         self.booking_history = reservation_manager.get_bookings(guest_id)
-        for booking in self.booking_history:
-            self.add_option(MenuOption(
-                f"Room number: {booking[0]} / Number of guests: {booking[1]} / Start Date: {booking[2]} / End Date: {booking[3]}"))
+        print(self.booking_history)
+        if self.booking_history is not None:
+            for booking in self.booking_history:
+                self.add_option(MenuOption(
+                    f"Hotel Name: {booking[0]} / Room number: {booking[1]} / Start Date: {booking[3]} / End Date: {booking[4]}"))
+        else:
+            self.add_option(MenuOption("You have no Bookings yet"))
         self.add_option(MenuOption("Back"))
         self._login = login
         self._back = back
 
     def _navigate(self, choice: int):
-        if choice == len(self.booking_history) + 1:
+        if self.booking_history is None:
+            return self._back
+        elif choice == len(self.booking_history) + 1:
             # Benutzer hat "Back" ausgewählt
             return self._back
         elif 1 <= choice <= len(self.booking_history):
