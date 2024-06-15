@@ -21,7 +21,7 @@ class InventoryManager(object):
         city = input(str("Enter new city: "))
         new_address = Address(street=street, zip=zip, city=city)
         session.add(new_address)
-        session.commit()
+        session.commit()  # Alle Änderungen die während der Session gemacht wurden, werden somit in die DB geschrieben
 
         print('---------------------HOTEL-----------------------')
         name = input(str("Enter new hotel name: "))
@@ -198,9 +198,6 @@ class InventoryManager(object):
 
         finally:
             session.close()
-
-    def close4(self):
-        session = self.__Session.remove()
 
     # --------------------------------Edit Bookings as Admin------------------------------------------------------------
     def update_guest_info(self):
